@@ -31,6 +31,7 @@ public class CalibrateCamera {
     private Mat distCoeffs;
     private boolean isCalibrated;
     private VideoCapture capture;
+    private CircleServices circleServices;
 
     public CalibrateCamera() {
         this.capture = new VideoCapture();
@@ -46,6 +47,7 @@ public class CalibrateCamera {
         this.successes = 0;
         this.isCalibrated = false;
         this.timer = new Timer();
+        this.circleServices = new CircleServices();
     }
 
 
@@ -57,13 +59,13 @@ public class CalibrateCamera {
             try {
                 this.capture.read(frame);
                 if (!frame.empty()) {
-                    this.findAndDrawPoints(frame);
+//                    this.findAndDrawPoints(frame);
 
                     if (this.isCalibrated) {
                         Mat undistored = new Mat();
                         Imgproc.undistort(frame, undistored, intrinsic, distCoeffs);
                         undistoredImage = mat2Image(frame);
-
+                        circleServices.findCircles(frame);
                     }
                     imageToShow = mat2Image(frame);
                 }
