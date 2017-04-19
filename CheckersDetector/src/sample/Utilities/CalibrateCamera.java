@@ -29,7 +29,6 @@ public class CalibrateCamera {
     private int successes;
     private Mat intrinsic;
     private Mat distCoeffs;
-    private boolean isCalibrated;
     private VideoCapture capture;
     private CircleServices circleServices;
 
@@ -45,29 +44,19 @@ public class CalibrateCamera {
         this.intrinsic = new Mat(3, 3, CvType.CV_32FC1);
         this.distCoeffs = new Mat();
         this.successes = 0;
-        this.isCalibrated = false;
         this.timer = new Timer();
         this.circleServices = new CircleServices();
     }
 
 
-    public Image grabFrame() {
-        Image imageToShow = null;
+    public Mat grabFrame() {
         Mat frame = new Mat();
 
         if (this.capture.isOpened()) {
             try {
                 this.capture.read(frame);
                 if (!frame.empty()) {
-//                    this.findAndDrawPoints(frame);
-
-                    if (this.isCalibrated) {
-                        Mat undistored = new Mat();
-                        Imgproc.undistort(frame, undistored, intrinsic, distCoeffs);
-                        undistoredImage = mat2Image(frame);
-                        circleServices.findCircles(frame);
-                    }
-                    imageToShow = mat2Image(frame);
+                    this.findAndDrawPoints(frame);
                 }
 
             } catch (Exception e) {
@@ -76,7 +65,7 @@ public class CalibrateCamera {
             }
         }
 
-        return imageToShow;
+        return frame;
     }
 
     private void findAndDrawPoints(Mat frame) {
@@ -94,12 +83,6 @@ public class CalibrateCamera {
                 Calib3d.drawChessboardCorners(frame, boardSize, imageCorners, found);
             }
         }
-    }
-
-    private Image mat2Image(Mat frame) {
-        MatOfByte buffer = new MatOfByte();
-        Imgcodecs.imencode(".png", frame, buffer);
-        return new Image(new ByteArrayInputStream(buffer.toArray()));
     }
 
     //<editor-fold desc="Getters">
@@ -151,13 +134,10 @@ public class CalibrateCamera {
         return distCoeffs;
     }
 
-    public boolean isCalibrated() {
-        return isCalibrated;
-    }
-
     public VideoCapture getCapture() {
         return capture;
     }
+
     //</editor-fold>
     //<editor-fold desc="Setters">
     public void setTimer(Timer timer) {
@@ -206,10 +186,6 @@ public class CalibrateCamera {
 
     public void setDistCoeffs(Mat distCoeffs) {
         this.distCoeffs = distCoeffs;
-    }
-
-    public void setCalibrated(boolean calibrated) {
-        isCalibrated = calibrated;
     }
 
     public void setCapture(VideoCapture capture) {
