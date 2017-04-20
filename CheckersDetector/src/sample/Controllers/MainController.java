@@ -5,6 +5,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import lombok.Data;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfByte;
 import org.opencv.imgcodecs.Imgcodecs;
@@ -16,6 +17,7 @@ import java.io.ByteArrayInputStream;
 import java.util.Timer;
 import java.util.TimerTask;
 
+@Data
 public class MainController {
     @FXML
     private Button startCameraButton;
@@ -84,13 +86,4 @@ public class MainController {
         Imgcodecs.imencode(".png", frame, buffer);
         return new Image(new ByteArrayInputStream(buffer.toArray()));
     }
-
-    public CalibrateCamera getCalibrateCamera() {
-        return calibrateCamera;
-    }
-
-    public void setCalibrateCamera(CalibrateCamera calibrateCamera) {
-        this.calibrateCamera = calibrateCamera;
-    }
-
 }
