@@ -35,39 +35,41 @@ public class MainController {
 
     @FXML
     protected void startCamera() {
+        Image checkersBoardImage = new Image(new File("/Users/sot/Documents/workspace/PODSTAWY-TELEINFORMATYKI/CheckersDetector/checkersboard.png").toURI().toString());
+        checkersboardFrameView.setImage(checkersBoardImage);
         if (!calibrateCamera.isCameraActive()) {
 //            calibrateCamera.getCapture().open(0);
 //
 //            if (calibrateCamera.getCapture().isOpened()) {
-                calibrateCamera.setCameraActive(true);
+            calibrateCamera.setCameraActive(true);
 
-                TimerTask frameGrabber = new TimerTask() {
-                    @Override
-                    public void run() {
-                        Image checkersBoardImage = new Image(new File("/Users/sot/Documents/workspace/PODSTAWY-TELEINFORMATYKI/CheckersDetector/checkersboard.png").toURI().toString());
-                        checkersboardFrameView.setImage(checkersBoardImage);
-                        Mat frame = calibrateCamera.grabFrame();
-                        Image image = mat2Image(frame);
-                        Mat circleFrame = circleServices.findCircles(frame);
-                        Image circleImage = mat2Image(circleFrame);
-                        Platform.runLater(new Runnable() {
-                            @Override
-                            public void run() {
-                                originalFrameView.setImage(image);
-                                originalFrameView.setFitWidth(380);
-                                originalFrameView.setFitHeight(400);
-                                originalFrameView.setPreserveRatio(true);
-                                capturedCirclesFrameView.setImage(circleImage);
-                                capturedCirclesFrameView.setFitWidth(380);
-                                capturedCirclesFrameView.setFitHeight(400);
-                                capturedCirclesFrameView.setPreserveRatio(true);
-                            }
-                        });
+            TimerTask frameGrabber = new TimerTask() {
+                @Override
+                public void run() {
+                    Mat frame = calibrateCamera.grabFrame();
+                    Image image = mat2Image(frame);
+                    Mat circleFrame = circleServices.findCircles(frame);
+                    Image circleImage = mat2Image(circleFrame);
+                    Platform.runLater(new Runnable() {
+                        @Override
+                        public void run() {
 
-                    }
-                };
-                calibrateCamera.getTimer().schedule(frameGrabber, 0, 33);
-                this.startCameraButton.setText("Stop Camera");
+                            originalFrameView.setImage(image);
+                            originalFrameView.setFitWidth(380);
+                            originalFrameView.setFitHeight(400);
+                            originalFrameView.setPreserveRatio(true);
+
+                            capturedCirclesFrameView.setImage(circleImage);
+                            capturedCirclesFrameView.setFitWidth(380);
+                            capturedCirclesFrameView.setFitHeight(400);
+                            capturedCirclesFrameView.setPreserveRatio(true);
+                        }
+                    });
+
+                }
+            };
+            calibrateCamera.getTimer().schedule(frameGrabber, 0, 33);
+            this.startCameraButton.setText("Stop Camera");
 //            } else {
 //                System.err.println("Impossible to open the camera connection...");
 //            }

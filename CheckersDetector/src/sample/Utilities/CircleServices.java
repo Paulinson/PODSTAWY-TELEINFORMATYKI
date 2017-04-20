@@ -24,14 +24,13 @@ public class CircleServices {
         Mat circles = new Mat();
         Vector<Mat> circlesList = new Vector<Mat>();
 
-        HoughCircles(srcGray, circles, Imgproc.CV_HOUGH_GRADIENT, 1, 60, 200, 20, 30, 0);
+        HoughCircles(srcGray, circles, CV_HOUGH_GRADIENT, 1, 30, 200, 50, 0, 0 );
         System.out.println("#rows " + circles.rows() + " #cols " + circles.cols());
-        double x = 0.0;
-        double y = 0.0;
-        int r = 0;
 
-        for (int i = 0; i < circles.rows(); i++) {
-            double[] data = circles.get(i, 0);
+        double x, y, r;
+        x = y = r = 0.0;
+        for (int i = 0; i < circles.cols(); i++) {
+            double[] data = circles.get(0, i);
             for (int j = 0; j < data.length; j++) {
                 x = data[0];
                 y = data[1];
@@ -39,7 +38,7 @@ public class CircleServices {
             }
             Point center = new Point(x, y);
             circle(src, center, 3, new Scalar(0, 255, 0), -1, 8, 0);
-            circle(src, center, r, new Scalar(0, 0, 255), 20, 8, 0);
+            circle(src, center, (int) r, new Scalar(0, 0, 255), 20, 8, 0);
         }
         System.out.println(circlesList);
         return src;
