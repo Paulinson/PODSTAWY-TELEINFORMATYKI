@@ -1,9 +1,10 @@
 package sample.Utilities;
 
-import javafx.scene.image.Image;
-import javafx.scene.shape.Circle;
-import org.opencv.calib3d.Calib3d;
-import org.opencv.core.*;
+import com.sun.javafx.geom.Vec3f;
+import org.opencv.core.Mat;
+import org.opencv.core.Point;
+import org.opencv.core.Scalar;
+import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 
 import java.util.Vector;
@@ -37,12 +38,11 @@ public class CircleServices {
                 r = (int) data[2];
             }
             Point center = new Point(x, y);
-            circle(srcGray, center, 3, new Scalar(0, 255, 0), -1, 8, 0);
-            circle(srcGray, center, r, new Scalar(0, 0, 255), 3, 8, 0);
+            circle(src, center, 3, new Scalar(0, 255, 0), -1, 8, 0);
+            circle(src, center, r, new Scalar(0, 0, 255), 20, 8, 0);
         }
         System.out.println(circlesList);
-        return srcGray;
-
+        return src;
     }
 
 }

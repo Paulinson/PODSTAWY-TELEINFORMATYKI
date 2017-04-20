@@ -5,6 +5,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import org.opencv.core.Core;
 import sample.Controllers.MainController;
 import sample.Utilities.CalibrateCamera;
 
@@ -27,7 +28,7 @@ public class Main extends Application {
 
 
     public static void main(String[] args) {
-        System.load(new File("/usr/local/Cellar/opencv3/HEAD-10787c6/share/OpenCV/java/libopencv_java320.dylib").getAbsolutePath());
+        System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
         launch(args);
     }
 }

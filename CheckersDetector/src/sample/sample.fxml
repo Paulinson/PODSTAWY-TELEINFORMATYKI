@@ -10,17 +10,18 @@
 <?import javafx.scene.layout.VBox?>
 
 <VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controllers.MainController">
-   <children>
-      <HBox prefHeight="100.0" prefWidth="200.0">
-         <children>
-            <ImageView id="originalFrameView" fx:id="originalFrameView" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" />
-            <ImageView id="capturedCirclesFrameView" fx:id="capturedCirclesFrameView" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" />
-         </children>
-      </HBox>
-      <HBox prefHeight="100.0" prefWidth="200.0">
-         <children>
-            <Button id="startCameraButton" fx:id="startCameraButton" mnemonicParsing="false" onAction="#startCamera" text="Start Camera" />
-         </children>
-      </HBox>
-   </children>
+    <children>
+        <HBox prefHeight="100.0" prefWidth="200.0">
+            <children>
+                <ImageView id="originalFrameView" fx:id="originalFrameView" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" />
+                <ImageView id="capturedCirclesFrameView" fx:id="capturedCirclesFrameView" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" />
+            </children>
+        </HBox>
+        <HBox prefHeight="29.0" prefWidth="600.0">
+            <children>
+                <Button id="startCameraButton" fx:id="startCameraButton" mnemonicParsing="false" onAction="#startCamera" text="Start Camera" />
+            </children>
+        </HBox>
+          <ImageView id="checkersboardFrameView" fx:id="checkersboardFrameView" fitHeight="215.0" fitWidth="592.0" pickOnBounds="true" preserveRatio="true" />
+    </children>
 </VBox>

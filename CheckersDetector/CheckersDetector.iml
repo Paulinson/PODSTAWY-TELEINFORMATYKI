@@ -22,6 +22,15 @@
       </library>
     </orderEntry>
     <orderEntry type="library" name="opencv-320" level="project" />
+    <orderEntry type="module-library" exported="">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/lombok.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
     <orderEntry type="library" name="lombok" level="project" />
   </component>
 </module>

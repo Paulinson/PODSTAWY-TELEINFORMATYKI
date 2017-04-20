@@ -14,6 +14,7 @@ import sample.Utilities.CircleServices;
 
 import java.awt.*;
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -26,6 +27,8 @@ public class MainController {
     private ImageView originalFrameView;
     @FXML
     private ImageView capturedCirclesFrameView;
+    @FXML
+    private ImageView checkersboardFrameView;
 
     private CalibrateCamera calibrateCamera;
     private CircleServices circleServices = new CircleServices();
@@ -33,14 +36,16 @@ public class MainController {
     @FXML
     protected void startCamera() {
         if (!calibrateCamera.isCameraActive()) {
-            calibrateCamera.getCapture().open(0);
-
-            if (calibrateCamera.getCapture().isOpened()) {
+//            calibrateCamera.getCapture().open(0);
+//
+//            if (calibrateCamera.getCapture().isOpened()) {
                 calibrateCamera.setCameraActive(true);
 
                 TimerTask frameGrabber = new TimerTask() {
                     @Override
                     public void run() {
+                        Image checkersBoardImage = new Image(new File("/Users/sot/Documents/workspace/PODSTAWY-TELEINFORMATYKI/CheckersDetector/checkersboard.png").toURI().toString());
+                        checkersboardFrameView.setImage(checkersBoardImage);
                         Mat frame = calibrateCamera.grabFrame();
                         Image image = mat2Image(frame);
                         Mat circleFrame = circleServices.findCircles(frame);
@@ -52,7 +57,6 @@ public class MainController {
                                 originalFrameView.setFitWidth(380);
                                 originalFrameView.setFitHeight(400);
                                 originalFrameView.setPreserveRatio(true);
-
                                 capturedCirclesFrameView.setImage(circleImage);
                                 capturedCirclesFrameView.setFitWidth(380);
                                 capturedCirclesFrameView.setFitHeight(400);
@@ -64,10 +68,9 @@ public class MainController {
                 };
                 calibrateCamera.getTimer().schedule(frameGrabber, 0, 33);
                 this.startCameraButton.setText("Stop Camera");
-
-            } else {
-                System.err.println("Impossible to open the camera connection...");
-            }
+//            } else {
+//                System.err.println("Impossible to open the camera connection...");
+//            }
         } else {
             calibrateCamera.setCameraActive(false);
             startCameraButton.setText("Start Camera");
