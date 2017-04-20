@@ -22,5 +22,6 @@
       </library>
     </orderEntry>
     <orderEntry type="library" name="opencv-320" level="project" />
+    <orderEntry type="library" name="lombok" level="project" />
   </component>
 </module>

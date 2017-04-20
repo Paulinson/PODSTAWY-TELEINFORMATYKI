@@ -1,6 +1,9 @@
 package sample.Utilities;
 
 import javafx.scene.image.Image;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.opencv.calib3d.Calib3d;
 import org.opencv.core.*;
 import org.opencv.imgcodecs.Imgcodecs;
@@ -12,12 +15,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
 
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class CalibrateCamera {
 
+    //<editor-fold desc="Static">
     private static final int BOARDS_NUMBER = 20;
     private static final int HORIZONTAL_CORNERS = 9;
     private static final int VERTICAL_CORNERS = 6;
-
+    //</editor-fold>
+    //<editor-fold desc="Variables">
     private Timer timer;
     private boolean cameraActive;
     private Mat savedImage;
@@ -29,28 +37,11 @@ public class CalibrateCamera {
     private int successes;
     private Mat intrinsic;
     private Mat distCoeffs;
-    private boolean isCalibrated;
     private VideoCapture capture;
+    private CircleServices circleServices;
+    //</editor-fold>
 
-    public CalibrateCamera() {
-        this.capture = new VideoCapture();
-        this.cameraActive = false;
-        this.obj = new MatOfPoint3f();
-        this.imageCorners = new MatOfPoint2f();
-        this.savedImage = new Mat();
-        this.undistoredImage = null;
-        this.imagePoints = new ArrayList<>();
-        this.objectPoints = new ArrayList<>();
-        this.intrinsic = new Mat(3, 3, CvType.CV_32FC1);
-        this.distCoeffs = new Mat();
-        this.successes = 0;
-        this.isCalibrated = false;
-        this.timer = new Timer();
-    }
-
-
-    public Image grabFrame() {
-        Image imageToShow = null;
+    public Mat grabFrame() {
         Mat frame = new Mat();
 
         if (this.capture.isOpened()) {
@@ -58,14 +49,6 @@ public class CalibrateCamera {
                 this.capture.read(frame);
                 if (!frame.empty()) {
                     this.findAndDrawPoints(frame);
-
-                    if (this.isCalibrated) {
-                        Mat undistored = new Mat();
-                        Imgproc.undistort(frame, undistored, intrinsic, distCoeffs);
-                        undistoredImage = mat2Image(frame);
-
-                    }
-                    imageToShow = mat2Image(frame);
                 }
 
             } catch (Exception e) {
@@ -74,7 +57,7 @@ public class CalibrateCamera {
             }
         }
 
-        return imageToShow;
+        return frame;
     }
 
     private void findAndDrawPoints(Mat frame) {
@@ -93,125 +76,4 @@ public class CalibrateCamera {
             }
         }
     }
-
-    private Image mat2Image(Mat frame) {
-        MatOfByte buffer = new MatOfByte();
-        Imgcodecs.imencode(".png", frame, buffer);
-        return new Image(new ByteArrayInputStream(buffer.toArray()));
-    }
-
-    //<editor-fold desc="Getters">
-    public Timer getTimer() {
-        return timer;
-    }
-
-    public boolean isCameraActive() {
-        return cameraActive;
-    }
-
-    public Mat getSavedImage() {
-        return savedImage;
-    }
-
-    public Image getUndistoredImage() {
-        return undistoredImage;
-    }
-
-    public Image getCamStream() {
-        return camStream;
-    }
-
-    public List<Mat> getImagePoints() {
-        return imagePoints;
-    }
-
-    public List<Mat> getObjectPoints() {
-        return objectPoints;
-    }
-
-    public MatOfPoint3f getObj() {
-        return obj;
-    }
-
-    public MatOfPoint2f getImageCorners() {
-        return imageCorners;
-    }
-
-    public int getSuccesses() {
-        return successes;
-    }
-
-    public Mat getIntrinsic() {
-        return intrinsic;
-    }
-
-    public Mat getDistCoeffs() {
-        return distCoeffs;
-    }
-
-    public boolean isCalibrated() {
-        return isCalibrated;
-    }
-
-    public VideoCapture getCapture() {
-        return capture;
-    }
-    //</editor-fold>
-    //<editor-fold desc="Setters">
-    public void setTimer(Timer timer) {
-        this.timer = timer;
-    }
-
-    public void setCameraActive(boolean cameraActive) {
-        this.cameraActive = cameraActive;
-    }
-
-    public void setSavedImage(Mat savedImage) {
-        this.savedImage = savedImage;
-    }
-
-    public void setUndistoredImage(Image undistoredImage) {
-        this.undistoredImage = undistoredImage;
-    }
-
-    public void setCamStream(Image camStream) {
-        this.camStream = camStream;
-    }
-
-    public void setImagePoints(List<Mat> imagePoints) {
-        this.imagePoints = imagePoints;
-    }
-
-    public void setObjectPoints(List<Mat> objectPoints) {
-        this.objectPoints = objectPoints;
-    }
-
-    public void setObj(MatOfPoint3f obj) {
-        this.obj = obj;
-    }
-
-    public void setImageCorners(MatOfPoint2f imageCorners) {
-        this.imageCorners = imageCorners;
-    }
-
-    public void setSuccesses(int successes) {
-        this.successes = successes;
-    }
-
-    public void setIntrinsic(Mat intrinsic) {
-        this.intrinsic = intrinsic;
-    }
-
-    public void setDistCoeffs(Mat distCoeffs) {
-        this.distCoeffs = distCoeffs;
-    }
-
-    public void setCalibrated(boolean calibrated) {
-        isCalibrated = calibrated;
-    }
-
-    public void setCapture(VideoCapture capture) {
-        this.capture = capture;
-    }
-    //</editor-fold>
 }

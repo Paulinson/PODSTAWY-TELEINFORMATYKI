@@ -5,19 +5,30 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import lombok.Data;
+import org.opencv.core.Mat;
+import org.opencv.core.MatOfByte;
+import org.opencv.imgcodecs.Imgcodecs;
 import sample.Utilities.CalibrateCamera;
+import sample.Utilities.CircleServices;
 
+import java.awt.*;
+import java.io.ByteArrayInputStream;
 import java.util.Timer;
 import java.util.TimerTask;
 
+@Data
 public class MainController {
     @FXML
     private Button startCameraButton;
 
     @FXML
     private ImageView originalFrameView;
+    @FXML
+    private ImageView capturedCirclesFrameView;
 
     private CalibrateCamera calibrateCamera;
+    private CircleServices circleServices = new CircleServices();
 
     @FXML
     protected void startCamera() {
@@ -30,14 +41,22 @@ public class MainController {
                 TimerTask frameGrabber = new TimerTask() {
                     @Override
                     public void run() {
-                        calibrateCamera.setCamStream(calibrateCamera.grabFrame());
+                        Mat frame = calibrateCamera.grabFrame();
+                        Image image = mat2Image(frame);
+                        Mat circleFrame = circleServices.findCircles(frame);
+                        Image circleImage = mat2Image(circleFrame);
                         Platform.runLater(new Runnable() {
                             @Override
                             public void run() {
-                                originalFrameView.setImage(calibrateCamera.getCamStream());
+                                originalFrameView.setImage(image);
                                 originalFrameView.setFitWidth(380);
                                 originalFrameView.setFitHeight(400);
                                 originalFrameView.setPreserveRatio(true);
+
+                                capturedCirclesFrameView.setImage(circleImage);
+                                capturedCirclesFrameView.setFitWidth(380);
+                                capturedCirclesFrameView.setFitHeight(400);
+                                capturedCirclesFrameView.setPreserveRatio(true);
                             }
                         });
 
@@ -51,20 +70,20 @@ public class MainController {
             }
         } else {
             calibrateCamera.setCameraActive(false);
+            startCameraButton.setText("Start Camera");
             if (calibrateCamera.getTimer() != null) {
                 calibrateCamera.getTimer().cancel();
                 calibrateCamera.setTimer(null);
             }
             calibrateCamera.getCapture().release();
             originalFrameView.setImage(null);
+            capturedCirclesFrameView.setImage(null);
         }
     }
 
-    public CalibrateCamera getCalibrateCamera() {
-        return calibrateCamera;
-    }
-
-    public void setCalibrateCamera(CalibrateCamera calibrateCamera) {
-        this.calibrateCamera = calibrateCamera;
+    public Image mat2Image(Mat frame) {
+        MatOfByte buffer = new MatOfByte();
+        Imgcodecs.imencode(".png", frame, buffer);
+        return new Image(new ByteArrayInputStream(buffer.toArray()));
     }
 }
