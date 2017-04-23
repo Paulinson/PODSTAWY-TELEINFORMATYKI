@@ -9,8 +9,12 @@ import lombok.Data;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfByte;
 import org.opencv.imgcodecs.Imgcodecs;
+import org.opencv.core.Core;
+import org.opencv.videoio.VideoCapture;
 import sample.Utilities.CalibrateCamera;
 import sample.Utilities.CircleServices;
+
+
 
 import java.awt.*;
 import java.io.ByteArrayInputStream;
@@ -91,4 +95,34 @@ public class MainController {
         Imgcodecs.imencode(".png", frame, buffer);
         return new Image(new ByteArrayInputStream(buffer.toArray()));
     }
+
+    @FXML
+    public void takeSnapshot()
+    {
+        VideoCapture camera = new VideoCapture(0);
+
+        if (!calibrateCamera.isCameraActive()) {
+            System.out.println("Error");
+        } else {
+            Mat frame = new Mat();
+
+            while (true) {
+                if (camera.read(frame)) {
+                    Imgcodecs.imwrite("test.jpg", frame);
+                    break;
+                }
+            }
+        }
+        camera.release();
+    }
+
+    public void saveImage(BufferedImage img) {
+        try {
+            File outputfile = new File("Images/new.png");
+            ImageIO.write(img, "png", outputfile);
+        } catch (Exception e) {
+            System.out.println("Exception");
+        }
+    }
+
 }
