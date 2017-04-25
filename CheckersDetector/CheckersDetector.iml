@@ -29,8 +29,9 @@
         </CLASSES>
         <JAVADOC />
         <SOURCES />
+        <jarDirectory url="jar://$MODULE_DIR$/lombok.jar!/" recursive="false" />
       </library>
     </orderEntry>
-    <orderEntry type="library" name="lombok" level="project" />
+    <orderEntry type="library" exported="" name="lombok" level="project" />
   </component>
 </module>

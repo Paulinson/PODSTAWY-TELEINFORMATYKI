@@ -1,8 +1,6 @@
 package sample.Utilities;
 
 import javafx.scene.image.Image;
-import lombok.AllArgsConstructor;
-import lombok.Data;
 import org.opencv.calib3d.Calib3d;
 import org.opencv.core.*;
 import org.opencv.imgcodecs.Imgcodecs;
@@ -13,8 +11,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
 
-@Data
-@AllArgsConstructor
 public class CalibrateCamera {
 
     //<editor-fold desc="Static">
@@ -90,4 +86,130 @@ public class CalibrateCamera {
             }
         }
     }
+
+    //<editor-fold desc="Getters and Setters">
+    public static int getBoardsNumber() {
+        return BOARDS_NUMBER;
+    }
+
+    public static int getHorizontalCorners() {
+        return HORIZONTAL_CORNERS;
+    }
+
+    public static int getVerticalCorners() {
+        return VERTICAL_CORNERS;
+    }
+
+    public Timer getTimer() {
+        return timer;
+    }
+
+    public void setTimer(Timer timer) {
+        this.timer = timer;
+    }
+
+    public boolean isCameraActive() {
+        return cameraActive;
+    }
+
+    public void setCameraActive(boolean cameraActive) {
+        this.cameraActive = cameraActive;
+    }
+
+    public Mat getSavedImage() {
+        return savedImage;
+    }
+
+    public void setSavedImage(Mat savedImage) {
+        this.savedImage = savedImage;
+    }
+
+    public Image getUndistoredImage() {
+        return undistoredImage;
+    }
+
+    public void setUndistoredImage(Image undistoredImage) {
+        this.undistoredImage = undistoredImage;
+    }
+
+    public Image getCamStream() {
+        return camStream;
+    }
+
+    public void setCamStream(Image camStream) {
+        this.camStream = camStream;
+    }
+
+    public List<Mat> getImagePoints() {
+        return imagePoints;
+    }
+
+    public void setImagePoints(List<Mat> imagePoints) {
+        this.imagePoints = imagePoints;
+    }
+
+    public List<Mat> getObjectPoints() {
+        return objectPoints;
+    }
+
+    public void setObjectPoints(List<Mat> objectPoints) {
+        this.objectPoints = objectPoints;
+    }
+
+    public MatOfPoint3f getObj() {
+        return obj;
+    }
+
+    public void setObj(MatOfPoint3f obj) {
+        this.obj = obj;
+    }
+
+    public MatOfPoint2f getImageCorners() {
+        return imageCorners;
+    }
+
+    public void setImageCorners(MatOfPoint2f imageCorners) {
+        this.imageCorners = imageCorners;
+    }
+
+    public int getSuccesses() {
+        return successes;
+    }
+
+    public void setSuccesses(int successes) {
+        this.successes = successes;
+    }
+
+    public Mat getIntrinsic() {
+        return intrinsic;
+    }
+
+    public void setIntrinsic(Mat intrinsic) {
+        this.intrinsic = intrinsic;
+    }
+
+    public Mat getDistCoeffs() {
+        return distCoeffs;
+    }
+
+    public void setDistCoeffs(Mat distCoeffs) {
+        this.distCoeffs = distCoeffs;
+    }
+
+    public VideoCapture getCapture() {
+        return capture;
+    }
+
+    public void setCapture(VideoCapture capture) {
+        this.capture = capture;
+    }
+
+    public CircleServices getCircleServices() {
+        return circleServices;
+    }
+
+    public void setCircleServices(CircleServices circleServices) {
+        this.circleServices = circleServices;
+    }
+    //</editor-fold>
 }

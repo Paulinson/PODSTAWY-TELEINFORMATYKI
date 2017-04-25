@@ -5,20 +5,16 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import lombok.Data;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfByte;
 import org.opencv.imgcodecs.Imgcodecs;
 import sample.Utilities.CalibrateCamera;
 import sample.Utilities.CircleServices;
 
-import java.awt.*;
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.util.Timer;
 import java.util.TimerTask;
 
-@Data
 public class MainController {
     @FXML
     private Button startCameraButton;
@@ -91,4 +87,54 @@ public class MainController {
         Imgcodecs.imencode(".png", frame, buffer);
         return new Image(new ByteArrayInputStream(buffer.toArray()));
     }
+
+    //<editor-fold desc="Getters and Setters">
+    public Button getStartCameraButton() {
+        return startCameraButton;
+    }
+
+    public void setStartCameraButton(Button startCameraButton) {
+        this.startCameraButton = startCameraButton;
+    }
+
+    public ImageView getOriginalFrameView() {
+        return originalFrameView;
+    }
+
+    public void setOriginalFrameView(ImageView originalFrameView) {
+        this.originalFrameView = originalFrameView;
+    }
+
+    public ImageView getCapturedCirclesFrameView() {
+        return capturedCirclesFrameView;
+    }
+
+    public void setCapturedCirclesFrameView(ImageView capturedCirclesFrameView) {
+        this.capturedCirclesFrameView = capturedCirclesFrameView;
+    }
+
+    public ImageView getCheckersboardFrameView() {
+        return checkersboardFrameView;
+    }
+
+    public void setCheckersboardFrameView(ImageView checkersboardFrameView) {
+        this.checkersboardFrameView = checkersboardFrameView;
+    }
+
+    public CalibrateCamera getCalibrateCamera() {
+        return calibrateCamera;
+    }
+
+    public void setCalibrateCamera(CalibrateCamera calibrateCamera) {
+        this.calibrateCamera = calibrateCamera;
+    }
+
+    public CircleServices getCircleServices() {
+        return circleServices;
+    }
+
+    public void setCircleServices(CircleServices circleServices) {
+        this.circleServices = circleServices;
+    }
+    //</editor-fold>
 }
