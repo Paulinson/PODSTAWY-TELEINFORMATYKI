@@ -11,13 +11,19 @@ import org.opencv.imgcodecs.Imgcodecs;
 import sample.Utilities.CalibrateCamera;
 import sample.Utilities.CircleServices;
 
+import javax.imageio.ImageIO;
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.IOException;
 import java.util.TimerTask;
 
 public class MainController {
     @FXML
     private Button startCameraButton;
+
+    @FXML
+    private Button takeScreenshot;
+
 
     @FXML
     private ImageView originalFrameView;
@@ -88,14 +94,34 @@ public class MainController {
         return new Image(new ByteArrayInputStream(buffer.toArray()));
     }
 
+    @FXML
+    public void takeScreenshot()
+    {
+        File out=new File("screenShot0.png");
+        int i=0;
+        while (out.exists()){
+            out=new File("screenShot"+i+".png");
+        }
+     //    try {
+     //        ImageIO.write(Image,"png",out);
+     //   } catch (IOException e1) {
+     //       e1.printStackTrace();
+     //   }
+    }
+
+
     //<editor-fold desc="Getters and Setters">
     public Button getStartCameraButton() {
         return startCameraButton;
     }
 
+    public Button getTakeScreenshot() { return takeScreenshot; }
+
     public void setStartCameraButton(Button startCameraButton) {
         this.startCameraButton = startCameraButton;
     }
+
+    public void setTakeScreenshot(Button takeScreenshot) {this.takeScreenshot = takeScreenshot;}
 
     public ImageView getOriginalFrameView() {
         return originalFrameView;
