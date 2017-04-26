@@ -10,28 +10,25 @@
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar:///usr/local/Cellar/opencv3/HEAD-10787c6/share/OpenCV/java/opencv-320.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../../../opencv/build/java/opencv-320.jar!/" />
         </CLASSES>
         <JAVADOC />
         <NATIVE>
-          <root url="file:///usr/local/Cellar/opencv3/HEAD-10787c6/share/OpenCV/java" />
+          <root url="file://$MODULE_DIR$/../../../../opencv/build/java/x64" />
         </NATIVE>
         <SOURCES>
-          <root url="jar:///usr/local/Cellar/opencv3/HEAD-10787c6/share/OpenCV/java/opencv-320.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../../../opencv/build/java/opencv-320.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
-    <orderEntry type="library" name="opencv-320" level="project" />
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/lombok.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../../../lombok.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
-        <jarDirectory url="jar://$MODULE_DIR$/lombok.jar!/" recursive="false" />
       </library>
     </orderEntry>
-    <orderEntry type="library" exported="" name="lombok" level="project" />
   </component>
 </module>
