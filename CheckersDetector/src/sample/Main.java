@@ -18,7 +18,7 @@ public class Main extends Application {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("sample.fxml"));
         VBox rootElement =  loader.load();
         rootElement.setStyle("-fx-background-color: whitesmoke;");
-        Scene scene = new Scene(rootElement, 800, 600);
+        Scene scene = new Scene(rootElement, 520, 560);
         primaryStage.setTitle("Checkers Detector");
         primaryStage.setScene(scene);
         MainController controller = loader.getController();
