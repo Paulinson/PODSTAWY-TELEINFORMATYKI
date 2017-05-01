@@ -53,20 +53,19 @@ public class CalibrateCamera {
     public Mat grabFrame() {
         Mat frame = new Mat();
 
-//        if (this.capture.isOpened()) {
-//            try {
-//                this.capture.read(frame);
-//                if (!frame.empty()) {
+        if (this.capture.isOpened()) {
+            try {
+                this.capture.read(frame);
+                if (!frame.empty()) {
 //                    this.findAndDrawPoints(frame);
-//                }
-//
-//            } catch (Exception e) {
-//                System.err.print("ERROR");
-//                e.printStackTrace();
-//            }
-//        }
-        frame = Imgcodecs.imread("/Users/sot/Documents/workspace/PODSTAWY-TELEINFORMATYKI/CheckersDetector/ziemniak.png");
-        this.findAndDrawPoints(frame);
+                }
+
+            } catch (Exception e) {
+                System.err.print("ERROR");
+                e.printStackTrace();
+            }
+        }
+//        this.findAndDrawPoints(frame);
         return frame;
     }
 

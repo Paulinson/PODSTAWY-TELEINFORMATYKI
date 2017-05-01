@@ -22,15 +22,15 @@ public class MainController {
     private Button startCameraButton;
 
     @FXML
-    private Button takeScreenshot;
+    private Button nextMoveButton;
 
 
     @FXML
-    private ImageView originalFrameView;
+    private ImageView cameraView;
     @FXML
-    private ImageView capturedCirclesFrameView;
+    private ImageView captureView;
     @FXML
-    private ImageView checkersboardFrameView;
+    private ImageView checkersBoardView;
 
     private CalibrateCamera calibrateCamera;
     private CircleServices circleServices = new CircleServices();
@@ -38,43 +38,37 @@ public class MainController {
     @FXML
     protected void startCamera() {
         Image checkersBoardImage = new Image(new File("/Users/sot/Documents/workspace/PODSTAWY-TELEINFORMATYKI/CheckersDetector/checkersboard.png").toURI().toString());
-        checkersboardFrameView.setImage(checkersBoardImage);
+        checkersBoardView.setImage(checkersBoardImage);
         if (!calibrateCamera.isCameraActive()) {
-//            calibrateCamera.getCapture().open(0);
-//
-//            if (calibrateCamera.getCapture().isOpened()) {
+            calibrateCamera.getCapture().open(0);
+
+            if (calibrateCamera.getCapture().isOpened()) {
             calibrateCamera.setCameraActive(true);
 
             TimerTask frameGrabber = new TimerTask() {
                 @Override
                 public void run() {
                     Mat frame = calibrateCamera.grabFrame();
-                    Image image = mat2Image(frame);
+//                    Image image = mat2Image(frame);
                     Mat circleFrame = circleServices.findCircles(frame);
                     Image circleImage = mat2Image(circleFrame);
                     Platform.runLater(new Runnable() {
                         @Override
                         public void run() {
-
-                            originalFrameView.setImage(image);
-                            originalFrameView.setFitWidth(380);
-                            originalFrameView.setFitHeight(400);
-                            originalFrameView.setPreserveRatio(true);
-
-                            capturedCirclesFrameView.setImage(circleImage);
-                            capturedCirclesFrameView.setFitWidth(380);
-                            capturedCirclesFrameView.setFitHeight(400);
-                            capturedCirclesFrameView.setPreserveRatio(true);
+                            cameraView.setImage(circleImage);
+                            cameraView.setFitWidth(380);
+                            cameraView.setFitHeight(400);
+                            cameraView.setPreserveRatio(true);
                         }
                     });
 
                 }
             };
-            calibrateCamera.getTimer().schedule(frameGrabber, 0, 33);
+            calibrateCamera.getTimer().schedule(frameGrabber, 0, 1000);
             this.startCameraButton.setText("Stop Camera");
-//            } else {
-//                System.err.println("Impossible to open the camera connection...");
-//            }
+            } else {
+                System.err.println("Impossible to open the camera connection...");
+            }
         } else {
             calibrateCamera.setCameraActive(false);
             startCameraButton.setText("Start Camera");
@@ -83,8 +77,7 @@ public class MainController {
                 calibrateCamera.setTimer(null);
             }
             calibrateCamera.getCapture().release();
-            originalFrameView.setImage(null);
-            capturedCirclesFrameView.setImage(null);
+            cameraView.setImage(null);
         }
     }
 
@@ -115,36 +108,40 @@ public class MainController {
         return startCameraButton;
     }
 
-    public Button getTakeScreenshot() { return takeScreenshot; }
-
     public void setStartCameraButton(Button startCameraButton) {
         this.startCameraButton = startCameraButton;
     }
 
-    public void setTakeScreenshot(Button takeScreenshot) {this.takeScreenshot = takeScreenshot;}
-
-    public ImageView getOriginalFrameView() {
-        return originalFrameView;
+    public Button getNextMoveButton() {
+        return nextMoveButton;
     }
 
-    public void setOriginalFrameView(ImageView originalFrameView) {
-        this.originalFrameView = originalFrameView;
+    public void setNextMoveButton(Button nextMoveButton) {
+        this.nextMoveButton = nextMoveButton;
     }
 
-    public ImageView getCapturedCirclesFrameView() {
-        return capturedCirclesFrameView;
+    public ImageView getCameraView() {
+        return cameraView;
     }
 
-    public void setCapturedCirclesFrameView(ImageView capturedCirclesFrameView) {
-        this.capturedCirclesFrameView = capturedCirclesFrameView;
+    public void setCameraView(ImageView cameraView) {
+        this.cameraView = cameraView;
     }
 
-    public ImageView getCheckersboardFrameView() {
-        return checkersboardFrameView;
+    public ImageView getCaptureView() {
+        return captureView;
     }
 
-    public void setCheckersboardFrameView(ImageView checkersboardFrameView) {
-        this.checkersboardFrameView = checkersboardFrameView;
+    public void setCaptureView(ImageView captureView) {
+        this.captureView = captureView;
+    }
+
+    public ImageView getCheckersBoardView() {
+        return checkersBoardView;
+    }
+
+    public void setCheckersBoardView(ImageView checkersBoardView) {
+        this.checkersBoardView = checkersBoardView;
     }
 
     public CalibrateCamera getCalibrateCamera() {

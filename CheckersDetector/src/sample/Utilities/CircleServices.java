@@ -1,10 +1,8 @@
 package sample.Utilities;
 
 import com.sun.javafx.geom.Vec3f;
-import org.opencv.core.Mat;
-import org.opencv.core.Point;
-import org.opencv.core.Scalar;
-import org.opencv.core.Size;
+import org.opencv.core.*;
+import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 
 import java.util.Vector;
@@ -12,19 +10,26 @@ import java.util.Vector;
 import static org.opencv.imgproc.Imgproc.*;
 
 public class CircleServices {
-    private void reduceNoise(Mat src, Mat srcGray) {
-        cvtColor(src, srcGray, Imgproc.COLOR_RGBA2GRAY);
-        GaussianBlur(srcGray, srcGray, new Size(9, 9), 2, 2);
+    private void reduceNoise(Mat src, Mat dst) {
+        medianBlur(src, src, 5);
+        cvtColor(src, dst, Imgproc.COLOR_BGR2HSV);
     }
 
 
     public Mat findCircles(Mat src) {
-        Mat srcGray = new Mat();
-        reduceNoise(src, srcGray);
+        Mat converted = new Mat();
+        reduceNoise(src, converted);
+        Mat lowerRedRange = new Mat();
+        Mat upperRedRange = new Mat();
+        Mat redImage = new Mat();
+        Core.inRange(converted, new Scalar(0, 100, 100), new Scalar(10, 255, 255), lowerRedRange);
+        Core.inRange(converted, new Scalar(160, 100, 100), new Scalar(179, 255, 255), upperRedRange);
+        Core.addWeighted(lowerRedRange, 1.0, upperRedRange, 1.0, 1.0, redImage);
+        GaussianBlur(redImage, redImage, new Size(9, 9), 2, 2);
         Mat circles = new Mat();
         Vector<Mat> circlesList = new Vector<Mat>();
 
-        HoughCircles(srcGray, circles, CV_HOUGH_GRADIENT, 1, 30, 200, 50, 0, 0 );
+        HoughCircles(redImage, circles, CV_HOUGH_GRADIENT, 1, redImage.rows() / 8, 100, 20, 0, 0);
         System.out.println("#rows " + circles.rows() + " #cols " + circles.cols());
 
         double x, y, r;
@@ -37,11 +42,10 @@ public class CircleServices {
                 r = (int) data[2];
             }
             Point center = new Point(x, y);
-            circle(src, center, 3, new Scalar(0, 255, 0), -1, 8, 0);
-            circle(src, center, (int) r, new Scalar(0, 0, 255), 20, 8, 0);
+            circle(redImage, center, (int) r, new Scalar(0, 0, 255), 20, 8, 0);
         }
         System.out.println(circlesList);
-        return src;
+        return redImage;
     }
 
 }

@@ -7,30 +7,29 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
 <VBox maxHeight="560.0" maxWidth="521.0" minHeight="560.0" minWidth="200.0" prefHeight="560.0" prefWidth="521.0" xmlns="http://javafx.com/javafx/8.0.112" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controllers.MainController">
    <children>
       <SplitPane dividerPositions="0.5" prefHeight="200.0" prefWidth="521.0">
          <items>
-            <ImageView fitHeight="200.0" fitWidth="260.0" pickOnBounds="true" preserveRatio="true" />
-            <ImageView fitHeight="200.0" fitWidth="253.0" pickOnBounds="true" preserveRatio="true" />
+            <ImageView id="cameraView" fx:id="cameraView" fitHeight="200.0" fitWidth="260.0" pickOnBounds="true" preserveRatio="true" />
+            <ImageView id="captureView" fx:id="captureView" fitHeight="200.0" fitWidth="253.0" pickOnBounds="true" preserveRatio="true" />
          </items>
       </SplitPane>
-      <TextField prefHeight="89.0" prefWidth="251.0">
-         <opaqueInsets>
-            <Insets right="20.0" />
-         </opaqueInsets>
-         <VBox.margin>
-            <Insets left="70.0" right="200.0" top="10.0" />
-         </VBox.margin>
-      </TextField>
-      <Button mnemonicParsing="false" text="Next Move">
-         <VBox.margin>
-            <Insets left="350.0" top="-25.0" />
-         </VBox.margin>
-      </Button>
-      <ImageView depthTest="DISABLE" fitHeight="235.0" fitWidth="429.0" pickOnBounds="true" preserveRatio="true">
+      <HBox>
+         <children>
+            <TextField prefHeight="89.0" prefWidth="251.0">
+               <opaqueInsets>
+                  <Insets right="20.0" />
+               </opaqueInsets>
+            </TextField>
+            <Button id="nextMoveButton" fx:id="nextMoveButton" mnemonicParsing="false" text="Next Move" />
+            <Button fx:id="startCameraButton" mnemonicParsing="false" onAction="#startCamera" text="Start Camera" />
+         </children>
+      </HBox>
+      <ImageView id="checkersBoardView" fx:id="checkersBoardView" depthTest="DISABLE" fitHeight="235.0" fitWidth="429.0" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@../../checkersboard.png" />
          </image>
