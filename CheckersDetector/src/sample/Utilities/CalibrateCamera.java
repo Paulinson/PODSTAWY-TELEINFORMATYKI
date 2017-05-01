@@ -57,7 +57,7 @@ public class CalibrateCamera {
             try {
                 this.capture.read(frame);
                 if (!frame.empty()) {
-//                    this.findAndDrawPoints(frame);
+                    this.findAndDrawPoints(frame);
                 }
 
             } catch (Exception e) {
@@ -65,7 +65,7 @@ public class CalibrateCamera {
                 e.printStackTrace();
             }
         }
-//        this.findAndDrawPoints(frame);
+        this.findAndDrawPoints(frame);
         return frame;
     }
 

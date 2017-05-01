@@ -40,6 +40,7 @@ public class MainController {
         Image checkersBoardImage = new Image(new File("/Users/sot/Documents/workspace/PODSTAWY-TELEINFORMATYKI/CheckersDetector/checkersboard.png").toURI().toString());
         checkersBoardView.setImage(checkersBoardImage);
         if (!calibrateCamera.isCameraActive()) {
+            calibrateCamera = new CalibrateCamera();
             calibrateCamera.getCapture().open(0);
 
             if (calibrateCamera.getCapture().isOpened()) {
@@ -49,13 +50,13 @@ public class MainController {
                 @Override
                 public void run() {
                     Mat frame = calibrateCamera.grabFrame();
-//                    Image image = mat2Image(frame);
+                    Image image = mat2Image(frame);
                     Mat circleFrame = circleServices.findCircles(frame);
                     Image circleImage = mat2Image(circleFrame);
                     Platform.runLater(new Runnable() {
                         @Override
                         public void run() {
-                            cameraView.setImage(circleImage);
+                            cameraView.setImage(image);
                             cameraView.setFitWidth(380);
                             cameraView.setFitHeight(400);
                             cameraView.setPreserveRatio(true);
