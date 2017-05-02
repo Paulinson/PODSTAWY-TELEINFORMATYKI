@@ -8,22 +8,18 @@ import javafx.scene.image.ImageView;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfByte;
 import org.opencv.imgcodecs.Imgcodecs;
-import sample.Utilities.CalibrateCamera;
-import sample.Utilities.CircleServices;
+import sample.Utilities.Color;
+import sample.Utilities.ImageProcessing;
 
-import javax.imageio.ImageIO;
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.IOException;
 import java.util.TimerTask;
 
 public class MainController {
     @FXML
     private Button startCameraButton;
-
     @FXML
     private Button nextMoveButton;
-
 
     @FXML
     private ImageView cameraView;
@@ -32,52 +28,64 @@ public class MainController {
     @FXML
     private ImageView checkersBoardView;
 
-    private CalibrateCamera calibrateCamera;
-    private CircleServices circleServices = new CircleServices();
+    private ImageProcessing imageProcessing;
+
+    Color firstPlayer;
+    Color secondPlayer;
+    Color borderEdges;
 
     @FXML
     protected void startCamera() {
+        borderEdges = new Color(50,32,16,80,245,245); //GREEEN
+        firstPlayer = new Color(110, 50, 50, 130, 255, 255); //BLUE
+        secondPlayer = new Color(20, 100, 100, 30, 255,255); //YELLOW
+
+
         Image checkersBoardImage = new Image(new File("/Users/sot/Documents/workspace/PODSTAWY-TELEINFORMATYKI/CheckersDetector/checkersboard.png").toURI().toString());
         checkersBoardView.setImage(checkersBoardImage);
-        if (!calibrateCamera.isCameraActive()) {
-            calibrateCamera = new CalibrateCamera();
-            calibrateCamera.getCapture().open(0);
+        if (!imageProcessing.isCameraActive()) {
+            imageProcessing = new ImageProcessing();
+            imageProcessing.getCapture().open(0);
 
-            if (calibrateCamera.getCapture().isOpened()) {
-            calibrateCamera.setCameraActive(true);
+            if (imageProcessing.getCapture().isOpened()) {
+                imageProcessing.setCameraActive(true);
 
-            TimerTask frameGrabber = new TimerTask() {
-                @Override
-                public void run() {
-                    Mat frame = calibrateCamera.grabFrame();
-                    Image image = mat2Image(frame);
-                    Mat circleFrame = circleServices.findCircles(frame);
-                    Image circleImage = mat2Image(circleFrame);
-                    Platform.runLater(new Runnable() {
-                        @Override
-                        public void run() {
-                            cameraView.setImage(image);
-                            cameraView.setFitWidth(380);
-                            cameraView.setFitHeight(400);
-                            cameraView.setPreserveRatio(true);
+                TimerTask frameGrabber = new TimerTask() {
+                    @Override
+                    public void run() {
+                        Mat perspectiveMatrix = null;
+                        Mat frame = imageProcessing.grabFrame();
+                        Image image = mat2Image(frame);
+//                        Mat circleFrame = imageProcessing.findCircles(frame, secondPlayer.getMinValues(), secondPlayer.getMaxValues());
+//                        Image circleImage = mat2Image(circleFrame);
+                        if (perspectiveMatrix == null) {
+                            perspectiveMatrix = imageProcessing.findPerspectiveMatrix(frame);
                         }
-                    });
+                        Platform.runLater(new Runnable() {
+                            @Override
+                            public void run() {
+                                cameraView.setImage(circleImage);
+                                cameraView.setFitWidth(380);
+                                cameraView.setFitHeight(400);
+                                cameraView.setPreserveRatio(true);
+                            }
+                        });
 
-                }
-            };
-            calibrateCamera.getTimer().schedule(frameGrabber, 0, 1000);
-            this.startCameraButton.setText("Stop Camera");
+                    }
+                };
+                imageProcessing.getTimer().schedule(frameGrabber, 0, 33);
+                this.startCameraButton.setText("Stop Camera");
             } else {
                 System.err.println("Impossible to open the camera connection...");
             }
         } else {
-            calibrateCamera.setCameraActive(false);
+            imageProcessing.setCameraActive(false);
             startCameraButton.setText("Start Camera");
-            if (calibrateCamera.getTimer() != null) {
-                calibrateCamera.getTimer().cancel();
-                calibrateCamera.setTimer(null);
+            if (imageProcessing.getTimer() != null) {
+                imageProcessing.getTimer().cancel();
+                imageProcessing.setTimer(null);
             }
-            calibrateCamera.getCapture().release();
+            imageProcessing.getCapture().release();
             cameraView.setImage(null);
         }
     }
@@ -89,18 +97,17 @@ public class MainController {
     }
 
     @FXML
-    public void takeScreenshot()
-    {
-        File out=new File("screenShot0.png");
-        int i=0;
-        while (out.exists()){
-            out=new File("screenShot"+i+".png");
+    public void takeScreenshot() {
+        File out = new File("screenShot0.png");
+        int i = 0;
+        while (out.exists()) {
+            out = new File("screenShot" + i + ".png");
         }
-     //    try {
-     //        ImageIO.write(Image,"png",out);
-     //   } catch (IOException e1) {
-     //       e1.printStackTrace();
-     //   }
+        //    try {
+        //        ImageIO.write(Image,"png",out);
+        //   } catch (IOException e1) {
+        //       e1.printStackTrace();
+        //   }
     }
 
 
@@ -145,20 +152,37 @@ public class MainController {
         this.checkersBoardView = checkersBoardView;
     }
 
-    public CalibrateCamera getCalibrateCamera() {
-        return calibrateCamera;
+    public ImageProcessing getImageProcessing() {
+        return imageProcessing;
     }
 
-    public void setCalibrateCamera(CalibrateCamera calibrateCamera) {
-        this.calibrateCamera = calibrateCamera;
+    public void setImageProcessing(ImageProcessing imageProcessing) {
+        this.imageProcessing = imageProcessing;
     }
 
-    public CircleServices getCircleServices() {
-        return circleServices;
+    public Color getFirstPlayer() {
+        return firstPlayer;
     }
 
-    public void setCircleServices(CircleServices circleServices) {
-        this.circleServices = circleServices;
+    public void setFirstPlayer(Color firstPlayer) {
+        this.firstPlayer = firstPlayer;
     }
+
+    public Color getSecondPlayer() {
+        return secondPlayer;
+    }
+
+    public void setSecondPlayer(Color secondPlayer) {
+        this.secondPlayer = secondPlayer;
+    }
+
+    public Color getBorderEdges() {
+        return borderEdges;
+    }
+
+    public void setBorderEdges(Color borderEdges) {
+        this.borderEdges = borderEdges;
+    }
+
     //</editor-fold>
 }

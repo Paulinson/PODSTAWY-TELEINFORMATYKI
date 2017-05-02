@@ -3,20 +3,23 @@ package sample.Utilities;
 import javafx.scene.image.Image;
 import org.opencv.calib3d.Calib3d;
 import org.opencv.core.*;
-import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.videoio.VideoCapture;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
+import java.util.Vector;
 
-public class CalibrateCamera {
+import static org.opencv.imgproc.Imgproc.*;
+import static org.opencv.imgproc.Imgproc.CV_HOUGH_GRADIENT;
+import static org.opencv.imgproc.Imgproc.circle;
 
+public class ImageProcessing {
     //<editor-fold desc="Static">
     private static final int BOARDS_NUMBER = 20;
-    private static final int HORIZONTAL_CORNERS = 9;
-    private static final int VERTICAL_CORNERS = 6;
+    private static final int HORIZONTAL_CORNERS = 5;
+    private static final int VERTICAL_CORNERS = 5;
     //</editor-fold>
     //<editor-fold desc="Variables">
     private Timer timer;
@@ -31,10 +34,9 @@ public class CalibrateCamera {
     private Mat intrinsic;
     private Mat distCoeffs;
     private VideoCapture capture;
-    private CircleServices circleServices;
     //</editor-fold>
 
-    public CalibrateCamera(){
+    public ImageProcessing() {
         this.capture = new VideoCapture();
         this.cameraActive = false;
         this.obj = new MatOfPoint3f();
@@ -50,6 +52,10 @@ public class CalibrateCamera {
         this.timer = new Timer();
     }
 
+    private void mat2Hsv(Mat src, Mat dst) {
+        cvtColor(src, dst, Imgproc.COLOR_BGR2HSV);
+    }
+
     public Mat grabFrame() {
         Mat frame = new Mat();
 
@@ -57,7 +63,7 @@ public class CalibrateCamera {
             try {
                 this.capture.read(frame);
                 if (!frame.empty()) {
-                    this.findAndDrawPoints(frame);
+//                    this.findAndDrawPoints(frame);
                 }
 
             } catch (Exception e) {
@@ -65,7 +71,8 @@ public class CalibrateCamera {
                 e.printStackTrace();
             }
         }
-        this.findAndDrawPoints(frame);
+//        this.findAndDrawPoints(frame);
+
         return frame;
     }
 
@@ -82,8 +89,51 @@ public class CalibrateCamera {
                 Imgproc.cornerSubPix(grayImage, imageCorners, new Size(11, 11), new Size(-1, -1), term);
                 grayImage.copyTo(this.savedImage);
                 Calib3d.drawChessboardCorners(frame, boardSize, imageCorners, found);
+//                double x, y;
+//                x = y = 0.0;
+//                System.out.println(imageCorners.cols() + " " + imageCorners.rows());
+//                for (int i = 0; i < imageCorners.rows(); i++) {
+//                    double[] data = imageCorners.get(i, 0);
+//                    for (int j = 0; j < data.length; j++) {
+//                        x = data[0];
+//                        y = data[1];
+//                    }
+//                    System.out.println(x + " " + y);
+//                }
             }
         }
+    }
+
+    public Mat findPerspectiveMatrix(Mat Frame) {
+        return null;
+    }
+
+
+    public Mat findCircles(Mat src, List<Integer> minValues, List<Integer> maxValues) {
+        Mat converted = new Mat();
+        mat2Hsv(src, converted);
+        Mat colorRange = new Mat();
+        Core.inRange(converted, new Scalar(minValues.get(0), minValues.get(1), minValues.get(2)), new Scalar(maxValues.get(0), maxValues.get(1), maxValues.get(2)), colorRange);
+        Mat circles = new Mat();
+        Vector<Mat> circlesList = new Vector<Mat>();
+//        medianBlur(colorRange, colorRange, 5);
+//        HoughCircles(colorRange, circles, CV_HOUGH_GRADIENT, 1, 100, 4, 6, 16, 64);
+//        System.out.println("#rows " + circles.rows() + " #cols " + circles.cols());
+//
+//        double x, y, r;
+//        x = y = r = 0.0;
+//        for (int i = 0; i < circles.cols(); i++) {
+//            double[] data = circles.get(0, i);
+//            for (int j = 0; j < data.length; j++) {
+//                x = data[0];
+//                y = data[1];
+//                r = (int) data[2];
+//            }
+//            Point center = new Point(x, y);
+//            circle(colorRange, center, (int) r, new Scalar(0, 0, 255), 20, 8, 0);
+//        }
+//        System.out.println(circlesList);
+        return colorRange;
     }
 
     //<editor-fold desc="Getters and Setters">
@@ -201,14 +251,6 @@ public class CalibrateCamera {
 
     public void setCapture(VideoCapture capture) {
         this.capture = capture;
-    }
-
-    public CircleServices getCircleServices() {
-        return circleServices;
-    }
-
-    public void setCircleServices(CircleServices circleServices) {
-        this.circleServices = circleServices;
     }
     //</editor-fold>
 }

@@ -7,9 +7,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.opencv.core.Core;
 import sample.Controllers.MainController;
-import sample.Utilities.CalibrateCamera;
-
-import java.io.File;
+import sample.Utilities.ImageProcessing;
 
 public class Main extends Application {
 
@@ -22,7 +20,7 @@ public class Main extends Application {
         primaryStage.setTitle("Checkers Detector");
         primaryStage.setScene(scene);
         MainController controller = loader.getController();
-        controller.setCalibrateCamera(new CalibrateCamera());
+        controller.setImageProcessing(new ImageProcessing());
         primaryStage.show();
     }
 
