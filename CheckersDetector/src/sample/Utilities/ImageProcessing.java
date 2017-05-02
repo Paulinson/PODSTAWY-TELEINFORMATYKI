@@ -4,12 +4,10 @@ import javafx.scene.image.Image;
 import org.opencv.calib3d.Calib3d;
 import org.opencv.core.*;
 import org.opencv.imgproc.Imgproc;
+import org.opencv.utils.Converters;
 import org.opencv.videoio.VideoCapture;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Timer;
-import java.util.Vector;
+import java.util.*;
 
 import static org.opencv.imgproc.Imgproc.*;
 import static org.opencv.imgproc.Imgproc.CV_HOUGH_GRADIENT;
@@ -20,20 +18,24 @@ public class ImageProcessing {
     private static final int BOARDS_NUMBER = 20;
     private static final int HORIZONTAL_CORNERS = 5;
     private static final int VERTICAL_CORNERS = 5;
+    private static final Double SCREEN_SIZE = 800d;
+    private static final Double EDGE_SIZE = 10d;
     //</editor-fold>
     //<editor-fold desc="Variables">
-    private Timer timer;
-    private boolean cameraActive;
-    private Mat savedImage;
-    private Image undistoredImage, camStream;
-    private List<Mat> imagePoints;
-    private List<Mat> objectPoints;
-    private MatOfPoint3f obj;
-    private MatOfPoint2f imageCorners;
-    private int successes;
-    private Mat intrinsic;
-    private Mat distCoeffs;
-    private VideoCapture capture;
+    public Timer timer;
+    public boolean cameraActive;
+    public Mat savedImage;
+    public Image undistoredImage, camStream;
+    public List<Mat> imagePoints;
+    public List<Mat> objectPoints;
+    public MatOfPoint3f obj;
+    public MatOfPoint2f imageCorners;
+    public Mat perspectiveMatrix;
+    public int successes;
+    public Mat intrinsic;
+    public Mat distCoeffs;
+    public VideoCapture capture;
+    public boolean generatedPerspectiveMatrix;
     //</editor-fold>
 
     public ImageProcessing() {
@@ -50,6 +52,8 @@ public class ImageProcessing {
         this.successes = 0;
         this.cameraActive = false;
         this.timer = new Timer();
+        this.perspectiveMatrix = null;
+        this.generatedPerspectiveMatrix = false;
     }
 
     private void mat2Hsv(Mat src, Mat dst) {
@@ -104,153 +108,77 @@ public class ImageProcessing {
         }
     }
 
-    public Mat findPerspectiveMatrix(Mat Frame) {
-        return null;
+    public void findPerspectiveMatrix(Mat frame, Color color) {
+        Mat boardMarkers = findCircles(frame, color.getMinValues(), color.getMaxValues());
+        Mat perspectiveMatrix;
+        Square board;
+        if (boardMarkers != null && boardMarkers.cols() == 4) {
+            Mat boardMakersNew = boardMarkers;
+            Square square = new Square(new Point(0, 0), new Point(SCREEN_SIZE - 1, 0), new Point(SCREEN_SIZE - 1, SCREEN_SIZE - 1),
+                    new Point(0, SCREEN_SIZE - 1));
+            board = findCorners(boardMakersNew);
+            perspectiveMatrix = Imgproc.getPerspectiveTransform(Converters.vector_Point2f_to_Mat(board.getPoints()),
+                    Converters.vector_Point2f_to_Mat(square.getPoints()));
+            this.perspectiveMatrix = perspectiveMatrix;
+            this.generatedPerspectiveMatrix = true;
+        }
     }
 
+    public Square findCorners(Mat corners) {
+        Point topLeft = new Point(1000d, 1000d);
+        Point topRight = new Point(0d, 1000d);
+        Point bottomRight = new Point(0d, 0d);
+        Point bottomLeft = new Point(1000d, 0d);
+        for (int i = 0; i < corners.cols(); i++) {
+            double[] data = corners.get(0, i);
+            for (int j = 0; j < data.length; j++) {
+                if (data[0] + data[1] <= topLeft.x + topLeft.y) {
+                    topLeft.x = data[0] + EDGE_SIZE;
+                    topLeft.y = data[1] + EDGE_SIZE;
+                } else if (data[0] + data[1] >= bottomRight.x + bottomRight.y) {
+                    bottomRight.x = data[0] - EDGE_SIZE;
+                    bottomRight.y = data[1] - EDGE_SIZE;
+                } else if (data[0] >= topRight.x && data[1] <= topRight.y) {
+                    topRight.x = data[0] - EDGE_SIZE;
+                    topRight.y = data[1] + EDGE_SIZE;
+                } else if (data[0] <= bottomLeft.x && data[1] >= bottomLeft.y) {
+                    bottomLeft.x = data[0] + EDGE_SIZE;
+                    bottomLeft.y = data[1] + EDGE_SIZE;
+                }
+            }
+        }
+        return new Square(topLeft, topRight, bottomRight, bottomLeft);
+    }
+
+    public Mat topView(Mat frame, Mat perspectiveMatrix) {
+        Mat wrappedPerspective = new Mat();
+        Imgproc.warpPerspective(frame, wrappedPerspective, perspectiveMatrix, new Size(SCREEN_SIZE, SCREEN_SIZE));
+        return wrappedPerspective;
+    }
 
     public Mat findCircles(Mat src, List<Integer> minValues, List<Integer> maxValues) {
-        Mat converted = new Mat();
-        mat2Hsv(src, converted);
+        Mat hsv = new Mat();
+        mat2Hsv(src, hsv);
         Mat colorRange = new Mat();
-        Core.inRange(converted, new Scalar(minValues.get(0), minValues.get(1), minValues.get(2)), new Scalar(maxValues.get(0), maxValues.get(1), maxValues.get(2)), colorRange);
+        Core.inRange(hsv, new Scalar(minValues.get(0), minValues.get(1), minValues.get(2)), new Scalar(maxValues.get(0), maxValues.get(1), maxValues.get(2)), colorRange);
         Mat circles = new Mat();
         Vector<Mat> circlesList = new Vector<Mat>();
-//        medianBlur(colorRange, colorRange, 5);
-//        HoughCircles(colorRange, circles, CV_HOUGH_GRADIENT, 1, 100, 4, 6, 16, 64);
-//        System.out.println("#rows " + circles.rows() + " #cols " + circles.cols());
-//
-//        double x, y, r;
-//        x = y = r = 0.0;
-//        for (int i = 0; i < circles.cols(); i++) {
-//            double[] data = circles.get(0, i);
-//            for (int j = 0; j < data.length; j++) {
-//                x = data[0];
-//                y = data[1];
-//                r = (int) data[2];
-//            }
-//            Point center = new Point(x, y);
-//            circle(colorRange, center, (int) r, new Scalar(0, 0, 255), 20, 8, 0);
-//        }
-//        System.out.println(circlesList);
-        return colorRange;
-    }
+        medianBlur(colorRange, colorRange, 5);
+        HoughCircles(colorRange, circles, CV_HOUGH_GRADIENT, 1, 100, 4, 6, 16, 64);
+        System.out.println("#rows " + circles.rows() + " #cols " + circles.cols());
 
-    //<editor-fold desc="Getters and Setters">
-    public static int getBoardsNumber() {
-        return BOARDS_NUMBER;
+        double x, y, r;
+        x = y = r = 0.0;
+        for (int i = 0; i < circles.cols(); i++) {
+            double[] data = circles.get(0, i);
+            for (int j = 0; j < data.length; j++) {
+                x = data[0];
+                y = data[1];
+                r = (int) data[2];
+            }
+            Point center = new Point(x, y);
+            circle(colorRange, center, (int) r, new Scalar(0, 0, 255), 20, 8, 0);
+        }
+        return circles;
     }
-
-    public static int getHorizontalCorners() {
-        return HORIZONTAL_CORNERS;
-    }
-
-    public static int getVerticalCorners() {
-        return VERTICAL_CORNERS;
-    }
-
-    public Timer getTimer() {
-        return timer;
-    }
-
-    public void setTimer(Timer timer) {
-        this.timer = timer;
-    }
-
-    public boolean isCameraActive() {
-        return cameraActive;
-    }
-
-    public void setCameraActive(boolean cameraActive) {
-        this.cameraActive = cameraActive;
-    }
-
-    public Mat getSavedImage() {
-        return savedImage;
-    }
-
-    public void setSavedImage(Mat savedImage) {
-        this.savedImage = savedImage;
-    }
-
-    public Image getUndistoredImage() {
-        return undistoredImage;
-    }
-
-    public void setUndistoredImage(Image undistoredImage) {
-        this.undistoredImage = undistoredImage;
-    }
-
-    public Image getCamStream() {
-        return camStream;
-    }
-
-    public void setCamStream(Image camStream) {
-        this.camStream = camStream;
-    }
-
-    public List<Mat> getImagePoints() {
-        return imagePoints;
-    }
-
-    public void setImagePoints(List<Mat> imagePoints) {
-        this.imagePoints = imagePoints;
-    }
-
-    public List<Mat> getObjectPoints() {
-        return objectPoints;
-    }
-
-    public void setObjectPoints(List<Mat> objectPoints) {
-        this.objectPoints = objectPoints;
-    }
-
-    public MatOfPoint3f getObj() {
-        return obj;
-    }
-
-    public void setObj(MatOfPoint3f obj) {
-        this.obj = obj;
-    }
-
-    public MatOfPoint2f getImageCorners() {
-        return imageCorners;
-    }
-
-    public void setImageCorners(MatOfPoint2f imageCorners) {
-        this.imageCorners = imageCorners;
-    }
-
-    public int getSuccesses() {
-        return successes;
-    }
-
-    public void setSuccesses(int successes) {
-        this.successes = successes;
-    }
-
-    public Mat getIntrinsic() {
-        return intrinsic;
-    }
-
-    public void setIntrinsic(Mat intrinsic) {
-        this.intrinsic = intrinsic;
-    }
-
-    public Mat getDistCoeffs() {
-        return distCoeffs;
-    }
-
-    public void setDistCoeffs(Mat distCoeffs) {
-        this.distCoeffs = distCoeffs;
-    }
-
-    public VideoCapture getCapture() {
-        return capture;
-    }
-
-    public void setCapture(VideoCapture capture) {
-        this.capture = capture;
-    }
-    //</editor-fold>
 }

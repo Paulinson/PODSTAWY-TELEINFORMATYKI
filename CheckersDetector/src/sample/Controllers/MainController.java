@@ -11,6 +11,7 @@ import org.opencv.imgcodecs.Imgcodecs;
 import sample.Utilities.Color;
 import sample.Utilities.ImageProcessing;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.util.TimerTask;
@@ -20,6 +21,8 @@ public class MainController {
     private Button startCameraButton;
     @FXML
     private Button nextMoveButton;
+    @FXML
+    public Button calibrateButton;
 
     @FXML
     private ImageView cameraView;
@@ -28,7 +31,7 @@ public class MainController {
     @FXML
     private ImageView checkersBoardView;
 
-    private ImageProcessing imageProcessing;
+    ImageProcessing imageProcessing;
 
     Color firstPlayer;
     Color secondPlayer;
@@ -36,57 +39,56 @@ public class MainController {
 
     @FXML
     protected void startCamera() {
-        borderEdges = new Color(50,32,16,80,245,245); //GREEEN
+        borderEdges = new Color(50, 32, 16, 80, 245, 245); //GREEEN
         firstPlayer = new Color(110, 50, 50, 130, 255, 255); //BLUE
-        secondPlayer = new Color(20, 100, 100, 30, 255,255); //YELLOW
+        secondPlayer = new Color(20, 100, 100, 30, 255, 255); //YELLOW
 
 
         Image checkersBoardImage = new Image(new File("/Users/sot/Documents/workspace/PODSTAWY-TELEINFORMATYKI/CheckersDetector/checkersboard.png").toURI().toString());
         checkersBoardView.setImage(checkersBoardImage);
-        if (!imageProcessing.isCameraActive()) {
+        if (!imageProcessing.cameraActive) {
             imageProcessing = new ImageProcessing();
-            imageProcessing.getCapture().open(0);
-
-            if (imageProcessing.getCapture().isOpened()) {
-                imageProcessing.setCameraActive(true);
+            imageProcessing.capture.open(0);
+            if (imageProcessing.capture.isOpened()) {
+                imageProcessing.cameraActive = true;
 
                 TimerTask frameGrabber = new TimerTask() {
                     @Override
                     public void run() {
-                        Mat perspectiveMatrix = null;
                         Mat frame = imageProcessing.grabFrame();
+                        Mat topView = frame;
                         Image image = mat2Image(frame);
 //                        Mat circleFrame = imageProcessing.findCircles(frame, secondPlayer.getMinValues(), secondPlayer.getMaxValues());
 //                        Image circleImage = mat2Image(circleFrame);
-                        if (perspectiveMatrix == null) {
-                            perspectiveMatrix = imageProcessing.findPerspectiveMatrix(frame);
+                        Image topViewImage = null;
+                        if (imageProcessing.generatedPerspectiveMatrix == false) {
+                            imageProcessing.findPerspectiveMatrix(frame, borderEdges);
+                        } else {
+                            topView = imageProcessing.topView(frame, imageProcessing.perspectiveMatrix);
+                            topViewImage = mat2Image(topView);
+                            captureView.setImage(topViewImage);
                         }
-                        Platform.runLater(new Runnable() {
-                            @Override
-                            public void run() {
-                                cameraView.setImage(circleImage);
-                                cameraView.setFitWidth(380);
-                                cameraView.setFitHeight(400);
-                                cameraView.setPreserveRatio(true);
-                            }
-                        });
-
+                        cameraView.setImage(image);
+                        cameraView.setFitWidth(380);
+                        cameraView.setFitHeight(400);
+                        cameraView.setPreserveRatio(true);
                     }
                 };
-                imageProcessing.getTimer().schedule(frameGrabber, 0, 33);
+                imageProcessing.timer.schedule(frameGrabber, 0, 500);
                 this.startCameraButton.setText("Stop Camera");
             } else {
                 System.err.println("Impossible to open the camera connection...");
             }
         } else {
-            imageProcessing.setCameraActive(false);
+            imageProcessing.cameraActive = false;
             startCameraButton.setText("Start Camera");
-            if (imageProcessing.getTimer() != null) {
-                imageProcessing.getTimer().cancel();
-                imageProcessing.setTimer(null);
+            if (imageProcessing.timer != null) {
+                imageProcessing.timer.cancel();
+                imageProcessing.timer = null;
             }
-            imageProcessing.getCapture().release();
+            imageProcessing.capture.release();
             cameraView.setImage(null);
+            captureView.setImage(null);
         }
     }
 
@@ -110,7 +112,10 @@ public class MainController {
         //   }
     }
 
-
+    @FXML
+    public void calibrate(){
+        imageProcessing.generatedPerspectiveMatrix = false;
+    }
     //<editor-fold desc="Getters and Setters">
     public Button getStartCameraButton() {
         return startCameraButton;
