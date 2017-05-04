@@ -3,6 +3,8 @@ package sample.Controllers;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import org.opencv.core.Mat;
@@ -18,36 +20,41 @@ import java.util.TimerTask;
 
 public class MainController {
     @FXML
-    private Button startCameraButton;
+    public Button startCameraButton;
     @FXML
-    private Button nextMoveButton;
+    public Button nextMoveButton;
     @FXML
     public Button calibrateButton;
 
     @FXML
-    private ImageView cameraView;
+    public ImageView cameraView;
     @FXML
-    private ImageView captureView;
+    public ImageView captureView;
     @FXML
-    private ImageView checkersBoardView;
+    public ImageView calibrateView;
+    @FXML
+    public ImageView checkersBoardView;
+    @FXML
+    public TextArea infoTextArea;
 
-    ImageProcessing imageProcessing;
+    public ImageProcessing imageProcessing;
 
-    Color firstPlayer;
-    Color secondPlayer;
-    Color borderEdges;
+    Color firstPlayer = new Color(100,150,0, 140,255,255); //BLUE;
+    Color secondPlayer = new Color(20, 100, 100, 30, 255, 255); //YELLOW
+    Color borderEdges = new Color(50, 32, 16, 80, 245, 245); //GREEEN;
+    Color currentColor;
+    int gameState = 0;
+
+    public MainController() {
+
+    }
 
     @FXML
-    protected void startCamera() {
-        borderEdges = new Color(50, 32, 16, 80, 245, 245); //GREEEN
-        firstPlayer = new Color(110, 50, 50, 130, 255, 255); //BLUE
-        secondPlayer = new Color(20, 100, 100, 30, 255, 255); //YELLOW
-
-
+    public void startCamera() {
         Image checkersBoardImage = new Image(new File("/Users/sot/Documents/workspace/PODSTAWY-TELEINFORMATYKI/CheckersDetector/checkersboard.png").toURI().toString());
         checkersBoardView.setImage(checkersBoardImage);
         if (!imageProcessing.cameraActive) {
-            imageProcessing = new ImageProcessing();
+            imageProcessing = new ImageProcessing(MainController.this);
             imageProcessing.capture.open(0);
             if (imageProcessing.capture.isOpened()) {
                 imageProcessing.cameraActive = true;
@@ -58,23 +65,33 @@ public class MainController {
                         Mat frame = imageProcessing.grabFrame();
                         Mat topView = frame;
                         Image image = mat2Image(frame);
-//                        Mat circleFrame = imageProcessing.findCircles(frame, secondPlayer.getMinValues(), secondPlayer.getMaxValues());
-//                        Image circleImage = mat2Image(circleFrame);
                         Image topViewImage = null;
-                        if (imageProcessing.generatedPerspectiveMatrix == false) {
-                            imageProcessing.findPerspectiveMatrix(frame, borderEdges);
-                        } else {
-                            topView = imageProcessing.topView(frame, imageProcessing.perspectiveMatrix);
-                            topViewImage = mat2Image(topView);
-                            captureView.setImage(topViewImage);
-                        }
+//                        if (imageProcessing.generatedPerspectiveMatrix == false) {
+//                            imageProcessing.findPerspectiveMatrix(frame, borderEdges);
+//                        } else {
+//                            topView = imageProcessing.topView(frame, imageProcessing.perspectiveMatrix);
+//                            topViewImage = mat2Image(topView);
+//                            calibrateView.setImage(topViewImage);
+//                            calibrateView.setFitWidth(380);
+//                            calibrateView.setFitHeight(400);
+//                            calibrateView.setPreserveRatio(true);
+//                        }
                         cameraView.setImage(image);
                         cameraView.setFitWidth(380);
                         cameraView.setFitHeight(400);
                         cameraView.setPreserveRatio(true);
+
+                        if (gameState != 0) {
+                            Mat circleFrame = imageProcessing.findCircles(frame, currentColor.getMinValues(), currentColor.getMaxValues(), true);
+                            Image circleImage = mat2Image(circleFrame);
+                            captureView.setImage(circleImage);
+                            captureView.setFitWidth(380);
+                            captureView.setFitHeight(400);
+                            captureView.setPreserveRatio(true);
+                        }
                     }
                 };
-                imageProcessing.timer.schedule(frameGrabber, 0, 500);
+                imageProcessing.timer.schedule(frameGrabber, 0, 33);
                 this.startCameraButton.setText("Stop Camera");
             } else {
                 System.err.println("Impossible to open the camera connection...");
@@ -113,81 +130,28 @@ public class MainController {
     }
 
     @FXML
-    public void calibrate(){
+    public void calibrate() {
         imageProcessing.generatedPerspectiveMatrix = false;
     }
-    //<editor-fold desc="Getters and Setters">
-    public Button getStartCameraButton() {
-        return startCameraButton;
-    }
 
-    public void setStartCameraButton(Button startCameraButton) {
-        this.startCameraButton = startCameraButton;
+    @FXML
+    public void nextMove() {
+        switch (gameState) {
+            case 1: {
+                currentColor = firstPlayer;
+                gameState = 2;
+                break;
+            }
+            case 2: {
+                currentColor = secondPlayer;
+                gameState = 1;
+                break;
+            }
+            case 0: {
+                currentColor = firstPlayer;
+                gameState = 1;
+                break;
+            }
+        }
     }
-
-    public Button getNextMoveButton() {
-        return nextMoveButton;
-    }
-
-    public void setNextMoveButton(Button nextMoveButton) {
-        this.nextMoveButton = nextMoveButton;
-    }
-
-    public ImageView getCameraView() {
-        return cameraView;
-    }
-
-    public void setCameraView(ImageView cameraView) {
-        this.cameraView = cameraView;
-    }
-
-    public ImageView getCaptureView() {
-        return captureView;
-    }
-
-    public void setCaptureView(ImageView captureView) {
-        this.captureView = captureView;
-    }
-
-    public ImageView getCheckersBoardView() {
-        return checkersBoardView;
-    }
-
-    public void setCheckersBoardView(ImageView checkersBoardView) {
-        this.checkersBoardView = checkersBoardView;
-    }
-
-    public ImageProcessing getImageProcessing() {
-        return imageProcessing;
-    }
-
-    public void setImageProcessing(ImageProcessing imageProcessing) {
-        this.imageProcessing = imageProcessing;
-    }
-
-    public Color getFirstPlayer() {
-        return firstPlayer;
-    }
-
-    public void setFirstPlayer(Color firstPlayer) {
-        this.firstPlayer = firstPlayer;
-    }
-
-    public Color getSecondPlayer() {
-        return secondPlayer;
-    }
-
-    public void setSecondPlayer(Color secondPlayer) {
-        this.secondPlayer = secondPlayer;
-    }
-
-    public Color getBorderEdges() {
-        return borderEdges;
-    }
-
-    public void setBorderEdges(Color borderEdges) {
-        this.borderEdges = borderEdges;
-    }
-
-    //</editor-fold>
 }

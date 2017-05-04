@@ -6,6 +6,8 @@ import org.opencv.core.*;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.utils.Converters;
 import org.opencv.videoio.VideoCapture;
+import sample.Controllers.MainController;
+import sample.Main;
 
 import java.util.*;
 
@@ -36,9 +38,11 @@ public class ImageProcessing {
     public Mat distCoeffs;
     public VideoCapture capture;
     public boolean generatedPerspectiveMatrix;
+    public MainController mainController;
     //</editor-fold>
 
-    public ImageProcessing() {
+
+    public ImageProcessing(MainController mainController) {
         this.capture = new VideoCapture();
         this.cameraActive = false;
         this.obj = new MatOfPoint3f();
@@ -54,10 +58,15 @@ public class ImageProcessing {
         this.timer = new Timer();
         this.perspectiveMatrix = null;
         this.generatedPerspectiveMatrix = false;
+        this.mainController = mainController;
     }
 
     private void mat2Hsv(Mat src, Mat dst) {
         cvtColor(src, dst, Imgproc.COLOR_BGR2HSV);
+    }
+
+    private void mat2Gray(Mat src, Mat dst) {
+        cvtColor(src, dst, Imgproc.COLOR_RGBA2GRAY);
     }
 
     public Mat grabFrame() {
@@ -109,7 +118,7 @@ public class ImageProcessing {
     }
 
     public void findPerspectiveMatrix(Mat frame, Color color) {
-        Mat boardMarkers = findCircles(frame, color.getMinValues(), color.getMaxValues());
+        Mat boardMarkers = findCircles(frame, color.getMinValues(), color.getMaxValues(), false);
         Mat perspectiveMatrix;
         Square board;
         if (boardMarkers != null && boardMarkers.cols() == 4) {
@@ -156,7 +165,8 @@ public class ImageProcessing {
         return wrappedPerspective;
     }
 
-    public Mat findCircles(Mat src, List<Integer> minValues, List<Integer> maxValues) {
+
+    public Mat findCircles(Mat src, List<Integer> minValues, List<Integer> maxValues, boolean view) {
         Mat hsv = new Mat();
         mat2Hsv(src, hsv);
         Mat colorRange = new Mat();
@@ -166,7 +176,7 @@ public class ImageProcessing {
         medianBlur(colorRange, colorRange, 5);
         HoughCircles(colorRange, circles, CV_HOUGH_GRADIENT, 1, 100, 4, 6, 16, 64);
         System.out.println("#rows " + circles.rows() + " #cols " + circles.cols());
-
+        mainController.infoTextArea.setText("Pawns: " + circles.cols());
         double x, y, r;
         x = y = r = 0.0;
         for (int i = 0; i < circles.cols(); i++) {
@@ -177,8 +187,13 @@ public class ImageProcessing {
                 r = (int) data[2];
             }
             Point center = new Point(x, y);
-            circle(colorRange, center, (int) r, new Scalar(0, 0, 255), 20, 8, 0);
+            circle(src, center, (int) r, new Scalar(0, 0, 255), 2, 8, 0);
         }
-        return circles;
+        if (view) {
+            return colorRange;
+        } else {
+            return colorRange;
+        }
     }
+
 }

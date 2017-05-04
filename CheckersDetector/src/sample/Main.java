@@ -12,15 +12,16 @@ import sample.Utilities.ImageProcessing;
 public class Main extends Application {
 
     @Override
-    public void start(Stage primaryStage) throws Exception{
+    public void start(Stage primaryStage) throws Exception {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("sample.fxml"));
-        VBox rootElement =  loader.load();
+        VBox rootElement = loader.load();
         rootElement.setStyle("-fx-background-color: whitesmoke;");
-        Scene scene = new Scene(rootElement, 520, 560);
+        Scene scene = new Scene(rootElement);
         primaryStage.setTitle("Checkers Detector");
+        primaryStage.setResizable(false);
         primaryStage.setScene(scene);
         MainController controller = loader.getController();
-        controller.setImageProcessing(new ImageProcessing());
+        controller.imageProcessing = new ImageProcessing(controller);
         primaryStage.show();
     }
 

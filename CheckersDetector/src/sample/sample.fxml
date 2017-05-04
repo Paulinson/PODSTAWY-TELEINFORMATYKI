@@ -9,26 +9,26 @@
 
 <VBox xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controllers.MainController">
    <children>
-      <HBox prefHeight="100.0" prefWidth="200.0">
+      <HBox>
          <children>
-            <ImageView id="cameraView" fx:id="cameraView" fitHeight="200.0" fitWidth="260.0" pickOnBounds="true" preserveRatio="true" />
-            <ImageView id="captureView" fx:id="captureView" fitHeight="200.0" fitWidth="253.0" pickOnBounds="true" preserveRatio="true" />
-            <ImageView id="calibrateButton" fitHeight="200.0" fitWidth="253.0" pickOnBounds="true" preserveRatio="true" />
+            <ImageView id="cameraView" fx:id="cameraView" fitHeight="200.0" fitWidth="380.0" pickOnBounds="true" preserveRatio="true" />
+            <ImageView id="captureView" fx:id="captureView" fitHeight="200.0" fitWidth="380.0" pickOnBounds="true" preserveRatio="true" />
+            <ImageView id="calibrateView" fx:id="calibrateView" fitHeight="200.0" fitWidth="380.0" pickOnBounds="true" preserveRatio="true" />
          </children>
       </HBox>
-      <HBox prefHeight="100.0" prefWidth="200.0">
+      <HBox>
          <children>
-            <TextArea prefHeight="164.0" prefWidth="293.0" />
-            <VBox prefHeight="200.0" prefWidth="100.0">
+            <TextArea id="infoTextArea" fx:id="infoTextArea" prefHeight="164.0" prefWidth="380.0" />
+            <VBox>
                <children>
-                  <Button id="nextMoveButton" fx:id="nextMoveButton" mnemonicParsing="false" prefHeight="12.0" prefWidth="298.0" text="Next Move" />
-                  <Button fx:id="startCameraButton" mnemonicParsing="false" onAction="#startCamera" prefHeight="12.0" prefWidth="299.0" text="Start Camera" />
-                  <Button fx:id="calibrateButton" mnemonicParsing="false" onAction="#calibrate" prefHeight="27.0" prefWidth="100.0" text="Calibrate" />
+                  <Button id="nextMoveButton" fx:id="nextMoveButton" mnemonicParsing="false" onAction="#nextMove" prefHeight="12.0" prefWidth="380.0" text="Next Move" />
+                  <Button fx:id="startCameraButton" mnemonicParsing="false" onAction="#startCamera" prefHeight="12.0" prefWidth="380.0" text="Start Camera" />
+                  <Button fx:id="calibrateButton" mnemonicParsing="false" onAction="#calibrate" prefHeight="12.0" prefWidth="380.0" text="Calibrate" />
                </children>
             </VBox>
          </children>
       </HBox>
-      <HBox prefHeight="100.0" prefWidth="200.0">
+      <HBox>
          <children>
             <ImageView id="checkersBoardView" fx:id="checkersBoardView" depthTest="DISABLE" fitHeight="235.0" fitWidth="429.0" pickOnBounds="true" preserveRatio="true">
                <image>
