@@ -168,7 +168,8 @@ public class ImageProcessing {
 
     public Mat findCircles(Mat src, List<Integer> minValues, List<Integer> maxValues, boolean view) {
         Mat hsv = new Mat();
-        mat2Hsv(src, hsv);
+        Mat temp = src;
+        mat2Hsv(temp, hsv);
         Mat colorRange = new Mat();
         Core.inRange(hsv, new Scalar(minValues.get(0), minValues.get(1), minValues.get(2)), new Scalar(maxValues.get(0), maxValues.get(1), maxValues.get(2)), colorRange);
         Mat circles = new Mat();
@@ -190,7 +191,7 @@ public class ImageProcessing {
             circle(src, center, (int) r, new Scalar(0, 0, 255), 2, 8, 0);
         }
         if (view) {
-            return colorRange;
+            return temp;
         } else {
             return colorRange;
         }
