@@ -96,7 +96,7 @@ public class MainController {
 //                                drawBoard.putPawn(pawn, board);
 //                            }
                             for (double[] pawn : secondPlayerPawnsTable) {
-                                drawBoard.putPawn(pawn, board, State.WHITE);
+                                drawBoard.putPawn(pawn, board, State.BLACK);
                             }
                             Mat backGround = drawBoard.drawGame(board);
                             checkersBoardView.setImage(mat2Image(backGround));

@@ -20,7 +20,7 @@ public class ImageProcessing {
     private static final int BOARDS_NUMBER = 20;
     private static final int HORIZONTAL_CORNERS = 5;
     private static final int VERTICAL_CORNERS = 5;
-    private static final Double SCREEN_SIZE = 400d;
+    private static final Double SCREEN_SIZE = 800d;
     private static final Double EDGE_SIZE = 10d;
     //</editor-fold>
     //<editor-fold desc="Variables">
@@ -172,7 +172,7 @@ public class ImageProcessing {
             return circles;
         }
     }
-    
+
     public List<double[]> matToDouble(Mat mat) {
         List<double[]> doubles = new ArrayList<>();
         for (int i = 0; i < mat.cols(); i++) {

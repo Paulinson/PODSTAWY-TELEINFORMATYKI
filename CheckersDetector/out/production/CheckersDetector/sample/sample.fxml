@@ -21,7 +21,7 @@
             <TextArea id="infoTextArea" fx:id="infoTextArea" prefHeight="164.0" prefWidth="380.0" />
             <VBox>
                <children>
-                  <Button id="nextMoveButton" fx:id="nextMoveButton" mnemonicParsing="false" onAction="#nextMove" prefHeight="12.0" prefWidth="380.0" text="Next Move" />
+                  <Button id="nextMoveButton" fx:id="nextMoveButton" mnemonicParsing="false" onAction="#nextMove" prefHeight="12.0" prefWidth="380.0" text="Start Game" />
                   <Button fx:id="startCameraButton" mnemonicParsing="false" onAction="#startCamera" prefHeight="12.0" prefWidth="380.0" text="Start Camera" />
                   <Button fx:id="calibrateButton" mnemonicParsing="false" onAction="#calibrate" prefHeight="12.0" prefWidth="380.0" text="Calibrate" />
                </children>
@@ -30,11 +30,7 @@
       </HBox>
       <HBox>
          <children>
-            <ImageView id="checkersBoardView" fx:id="checkersBoardView" depthTest="DISABLE" fitHeight="400.0" fitWidth="400.0" pickOnBounds="true" preserveRatio="true">
-               <image>
-                  <Image url="@../../checkersboard.png" />
-               </image>
-            </ImageView>
+            <ImageView id="checkersBoardView" fx:id="checkersBoardView" depthTest="DISABLE" fitHeight="400.0" fitWidth="400.0" pickOnBounds="true" preserveRatio="true"></ImageView>
          </children>
       </HBox>
    </children>
