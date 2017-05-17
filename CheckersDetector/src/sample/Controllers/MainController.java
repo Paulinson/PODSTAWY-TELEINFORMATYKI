@@ -3,81 +3,109 @@ package sample.Controllers;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import lombok.Data;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfByte;
 import org.opencv.imgcodecs.Imgcodecs;
-import sample.Utilities.CalibrateCamera;
-import sample.Utilities.CircleServices;
+import sample.Utilities.Color;
+import sample.Utilities.ImageProcessing;
 
-import java.awt.*;
+import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
-import java.util.Timer;
+import java.io.File;
 import java.util.TimerTask;
 
-@Data
 public class MainController {
     @FXML
-    private Button startCameraButton;
+    public Button startCameraButton;
+    @FXML
+    public Button nextMoveButton;
+    @FXML
+    public Button calibrateButton;
 
     @FXML
-    private ImageView originalFrameView;
+    public ImageView cameraView;
     @FXML
-    private ImageView capturedCirclesFrameView;
+    public ImageView captureView;
+    @FXML
+    public ImageView calibrateView;
+    @FXML
+    public ImageView checkersBoardView;
+    @FXML
+    public TextArea infoTextArea;
 
-    private CalibrateCamera calibrateCamera;
-    private CircleServices circleServices = new CircleServices();
+    public ImageProcessing imageProcessing;
+
+    Color firstPlayer = new Color(100,150,0, 140,255,255); //BLUE;
+    Color secondPlayer = new Color(20, 100, 100, 30, 255, 255); //YELLOW
+    Color borderEdges = new Color(50, 32, 16, 80, 245, 245); //GREEEN;
+    Color currentColor;
+    int gameState = 0;
+
+    public MainController() {
+
+    }
 
     @FXML
-    protected void startCamera() {
-        if (!calibrateCamera.isCameraActive()) {
-            calibrateCamera.getCapture().open(0);
-
-            if (calibrateCamera.getCapture().isOpened()) {
-                calibrateCamera.setCameraActive(true);
+    public void startCamera() {
+        Image checkersBoardImage = new Image(new File("/Users/sot/Documents/workspace/PODSTAWY-TELEINFORMATYKI/CheckersDetector/checkersboard.png").toURI().toString());
+        checkersBoardView.setImage(checkersBoardImage);
+        if (!imageProcessing.cameraActive) {
+            imageProcessing = new ImageProcessing(MainController.this);
+            imageProcessing.capture.open(0);
+            if (imageProcessing.capture.isOpened()) {
+                imageProcessing.cameraActive = true;
 
                 TimerTask frameGrabber = new TimerTask() {
                     @Override
                     public void run() {
-                        Mat frame = calibrateCamera.grabFrame();
+                        Mat frame = imageProcessing.grabFrame();
+                        Mat topView = frame;
                         Image image = mat2Image(frame);
-                        Mat circleFrame = circleServices.findCircles(frame);
-                        Image circleImage = mat2Image(circleFrame);
-                        Platform.runLater(new Runnable() {
-                            @Override
-                            public void run() {
-                                originalFrameView.setImage(image);
-                                originalFrameView.setFitWidth(380);
-                                originalFrameView.setFitHeight(400);
-                                originalFrameView.setPreserveRatio(true);
+                        Image topViewImage = null;
+                        if (imageProcessing.generatedPerspectiveMatrix == false) {
+                            imageProcessing.findPerspectiveMatrix(frame, borderEdges);
+                        } else {
+                            topView = imageProcessing.topView(frame, imageProcessing.perspectiveMatrix);
+                            topViewImage = mat2Image(topView);
+                            calibrateView.setImage(topViewImage);
+                            calibrateView.setFitWidth(380);
+                            calibrateView.setFitHeight(400);
+                            calibrateView.setPreserveRatio(true);
+                        }
+                        cameraView.setImage(image);
+                        cameraView.setFitWidth(380);
+                        cameraView.setFitHeight(400);
+                        cameraView.setPreserveRatio(true);
 
-                                capturedCirclesFrameView.setImage(circleImage);
-                                capturedCirclesFrameView.setFitWidth(380);
-                                capturedCirclesFrameView.setFitHeight(400);
-                                capturedCirclesFrameView.setPreserveRatio(true);
-                            }
-                        });
-
+                        if (gameState != 0) {
+                            Mat circleFrame = imageProcessing.findCircles(frame, currentColor.getMinValues(), currentColor.getMaxValues(), true);
+                            Image circleImage = mat2Image(circleFrame);
+                            captureView.setImage(circleImage);
+                            captureView.setFitWidth(380);
+                            captureView.setFitHeight(400);
+                            captureView.setPreserveRatio(true);
+                        }
                     }
                 };
-                calibrateCamera.getTimer().schedule(frameGrabber, 0, 33);
+                imageProcessing.timer.schedule(frameGrabber, 0, 33);
                 this.startCameraButton.setText("Stop Camera");
-
             } else {
                 System.err.println("Impossible to open the camera connection...");
             }
         } else {
-            calibrateCamera.setCameraActive(false);
+            imageProcessing.cameraActive = false;
             startCameraButton.setText("Start Camera");
-            if (calibrateCamera.getTimer() != null) {
-                calibrateCamera.getTimer().cancel();
-                calibrateCamera.setTimer(null);
+            if (imageProcessing.timer != null) {
+                imageProcessing.timer.cancel();
+                imageProcessing.timer = null;
             }
-            calibrateCamera.getCapture().release();
-            originalFrameView.setImage(null);
-            capturedCirclesFrameView.setImage(null);
+            imageProcessing.capture.release();
+            cameraView.setImage(null);
+            captureView.setImage(null);
         }
     }
 
@@ -85,5 +113,45 @@ public class MainController {
         MatOfByte buffer = new MatOfByte();
         Imgcodecs.imencode(".png", frame, buffer);
         return new Image(new ByteArrayInputStream(buffer.toArray()));
+    }
+
+    @FXML
+    public void takeScreenshot() {
+        File out = new File("screenShot0.png");
+        int i = 0;
+        while (out.exists()) {
+            out = new File("screenShot" + i + ".png");
+        }
+        //    try {
+        //        ImageIO.write(Image,"png",out);
+        //   } catch (IOException e1) {
+        //       e1.printStackTrace();
+        //   }
+    }
+
+    @FXML
+    public void calibrate() {
+        imageProcessing.generatedPerspectiveMatrix = false;
+    }
+
+    @FXML
+    public void nextMove() {
+        switch (gameState) {
+            case 1: {
+                currentColor = firstPlayer;
+                gameState = 2;
+                break;
+            }
+            case 2: {
+                currentColor = secondPlayer;
+                gameState = 1;
+                break;
+            }
+            case 0: {
+                currentColor = firstPlayer;
+                gameState = 1;
+                break;
+            }
+        }
     }
 }
