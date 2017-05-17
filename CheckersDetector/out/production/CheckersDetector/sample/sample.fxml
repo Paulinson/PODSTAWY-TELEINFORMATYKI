@@ -30,7 +30,7 @@
       </HBox>
       <HBox>
          <children>
-            <ImageView id="checkersBoardView" fx:id="checkersBoardView" depthTest="DISABLE" fitHeight="235.0" fitWidth="429.0" pickOnBounds="true" preserveRatio="true">
+            <ImageView id="checkersBoardView" fx:id="checkersBoardView" depthTest="DISABLE" fitHeight="400.0" fitWidth="400.0" pickOnBounds="true" preserveRatio="true">
                <image>
                   <Image url="@../../checkersboard.png" />
                </image>

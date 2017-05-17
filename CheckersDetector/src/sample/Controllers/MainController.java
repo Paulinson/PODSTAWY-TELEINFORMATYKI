@@ -1,21 +1,18 @@
 package sample.Controllers;
 
-import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfByte;
 import org.opencv.imgcodecs.Imgcodecs;
-import sample.Utilities.Color;
-import sample.Utilities.ImageProcessing;
+import sample.Utilities.*;
 
-import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.util.List;
 import java.util.TimerTask;
 
 public class MainController {
@@ -39,7 +36,7 @@ public class MainController {
 
     public ImageProcessing imageProcessing;
 
-    Color firstPlayer = new Color(100,150,0, 140,255,255); //BLUE;
+    Color firstPlayer = new Color(100, 150, 0, 140, 255, 255); //BLUE;
     Color secondPlayer = new Color(20, 100, 100, 30, 255, 255); //YELLOW
     Color borderEdges = new Color(50, 32, 16, 80, 245, 245); //GREEEN;
     Color currentColor;
@@ -51,8 +48,9 @@ public class MainController {
 
     @FXML
     public void startCamera() {
-        Image checkersBoardImage = new Image(new File("/Users/sot/Documents/workspace/PODSTAWY-TELEINFORMATYKI/CheckersDetector/checkersboard.png").toURI().toString());
-        checkersBoardView.setImage(checkersBoardImage);
+        Board board = new Board();
+        DrawBoard drawBoard = new DrawBoard(board);
+        checkersBoardView.setImage(mat2Image(drawBoard.drawBackground(board)));
         if (!imageProcessing.cameraActive) {
             imageProcessing = new ImageProcessing(MainController.this);
             imageProcessing.capture.open(0);
@@ -82,16 +80,33 @@ public class MainController {
                         cameraView.setPreserveRatio(true);
 
                         if (gameState != 0) {
-                            Mat circleFrame = imageProcessing.findCircles(frame, currentColor.getMinValues(), currentColor.getMaxValues(), true);
+                            Mat circleFrame = imageProcessing.findCircles(topView, currentColor.getMinValues(), currentColor.getMaxValues(), true);
                             Image circleImage = mat2Image(circleFrame);
                             captureView.setImage(circleImage);
                             captureView.setFitWidth(380);
                             captureView.setFitHeight(400);
                             captureView.setPreserveRatio(true);
+
+//                            Mat firstPlayerPawns = imageProcessing.findCircles(topView, firstPlayer.getMinValues(), firstPlayer.getMaxValues(), false);
+                            Mat secondPlayerPawns = imageProcessing.findCircles(topView, secondPlayer.getMinValues(), secondPlayer.getMaxValues(), false);
+                            drawBoard.clearBoard();
+//                            List<double[]> firstPlayerPawnsTable = getPawnPositions(firstPlayerPawns);
+                            List<double[]> secondPlayerPawnsTable = getPawnPositions(secondPlayerPawns);
+//                            for (double[] pawn : getPawnPositions(firstPlayerPawns)) {
+//                                drawBoard.putPawn(pawn, board);
+//                            }
+                            for (double[] pawn : secondPlayerPawnsTable) {
+                                drawBoard.putPawn(pawn, board, State.WHITE);
+                            }
+                            Mat backGround = drawBoard.drawGame(board);
+                            checkersBoardView.setImage(mat2Image(backGround));
+                            checkersBoardView.setFitWidth(400);
+                            checkersBoardView.setFitHeight(400);
+                            checkersBoardView.setPreserveRatio(true);
                         }
                     }
                 };
-                imageProcessing.timer.schedule(frameGrabber, 0, 33);
+                imageProcessing.timer.schedule(frameGrabber, 0, 100);
                 this.startCameraButton.setText("Stop Camera");
             } else {
                 System.err.println("Impossible to open the camera connection...");
@@ -113,6 +128,15 @@ public class MainController {
         MatOfByte buffer = new MatOfByte();
         Imgcodecs.imencode(".png", frame, buffer);
         return new Image(new ByteArrayInputStream(buffer.toArray()));
+    }
+
+    public List<double[]> getPawnPositions(Mat mat) {
+        List<double[]> result = imageProcessing.matToDouble(mat);
+        for (double[] i : result) {
+            i[0] = i[0] / 100;
+            i[1] = i[1] / 100;
+        }
+        return result;
     }
 
     @FXML

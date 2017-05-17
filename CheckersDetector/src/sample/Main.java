@@ -18,7 +18,6 @@ public class Main extends Application {
         rootElement.setStyle("-fx-background-color: whitesmoke;");
         Scene scene = new Scene(rootElement);
         primaryStage.setTitle("Checkers Detector");
-        primaryStage.setResizable(false);
         primaryStage.setScene(scene);
         MainController controller = loader.getController();
         controller.imageProcessing = new ImageProcessing(controller);
