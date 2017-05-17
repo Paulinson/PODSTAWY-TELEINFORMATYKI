@@ -66,16 +66,16 @@ public class MainController {
                         Mat topView = frame;
                         Image image = mat2Image(frame);
                         Image topViewImage = null;
-//                        if (imageProcessing.generatedPerspectiveMatrix == false) {
-//                            imageProcessing.findPerspectiveMatrix(frame, borderEdges);
-//                        } else {
-//                            topView = imageProcessing.topView(frame, imageProcessing.perspectiveMatrix);
-//                            topViewImage = mat2Image(topView);
-//                            calibrateView.setImage(topViewImage);
-//                            calibrateView.setFitWidth(380);
-//                            calibrateView.setFitHeight(400);
-//                            calibrateView.setPreserveRatio(true);
-//                        }
+                        if (imageProcessing.generatedPerspectiveMatrix == false) {
+                            imageProcessing.findPerspectiveMatrix(frame, borderEdges);
+                        } else {
+                            topView = imageProcessing.topView(frame, imageProcessing.perspectiveMatrix);
+                            topViewImage = mat2Image(topView);
+                            calibrateView.setImage(topViewImage);
+                            calibrateView.setFitWidth(380);
+                            calibrateView.setFitHeight(400);
+                            calibrateView.setPreserveRatio(true);
+                        }
                         cameraView.setImage(image);
                         cameraView.setFitWidth(380);
                         cameraView.setFitHeight(400);
