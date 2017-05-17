@@ -20,7 +20,7 @@ public class ImageProcessing {
     private static final int BOARDS_NUMBER = 20;
     private static final int HORIZONTAL_CORNERS = 5;
     private static final int VERTICAL_CORNERS = 5;
-    private static final Double SCREEN_SIZE = 800d;
+    private static final Double SCREEN_SIZE = 400d;
     private static final Double EDGE_SIZE = 10d;
     //</editor-fold>
     //<editor-fold desc="Variables">
@@ -84,14 +84,16 @@ public class ImageProcessing {
 
         return frame;
     }
-    
+
 
     public void findPerspectiveMatrix(Mat frame, Color color) {
         Mat boardMarkers = findCircles(frame, color.getMinValues(), color.getMaxValues(), false);
         Mat perspectiveMatrix;
         Square board;
+        System.out.println(boardMarkers.cols());
         if (boardMarkers != null && boardMarkers.cols() == 4) {
             Mat boardMakersNew = boardMarkers;
+//            mat2Hsv(boardMakersNew, boardMakersNew);
             Square square = new Square(new Point(0, 0), new Point(SCREEN_SIZE - 1, 0), new Point(SCREEN_SIZE - 1, SCREEN_SIZE - 1),
                     new Point(0, SCREEN_SIZE - 1));
             board = findCorners(boardMakersNew);
@@ -103,28 +105,32 @@ public class ImageProcessing {
     }
 
     public Square findCorners(Mat corners) {
-        Point topLeft = new Point(1000d, 1000d);
-        Point topRight = new Point(0d, 1000d);
+        Point topLeft = new Point(10000d, 10000d);
+        Point topRight = new Point(0d, 10000d);
         Point bottomRight = new Point(0d, 0d);
-        Point bottomLeft = new Point(1000d, 0d);
+        Point bottomLeft = new Point(10000d, 0d);
         for (int i = 0; i < corners.cols(); i++) {
             double[] data = corners.get(0, i);
             for (int j = 0; j < data.length; j++) {
                 if (data[0] + data[1] <= topLeft.x + topLeft.y) {
                     topLeft.x = data[0] + EDGE_SIZE;
                     topLeft.y = data[1] + EDGE_SIZE;
-                } else if (data[0] + data[1] >= bottomRight.x + bottomRight.y) {
+                }
+                if (data[0] + data[1] >= bottomRight.x + bottomRight.y) {
                     bottomRight.x = data[0] - EDGE_SIZE;
                     bottomRight.y = data[1] - EDGE_SIZE;
-                } else if (data[0] >= topRight.x && data[1] <= topRight.y) {
+                }
+                if (data[0] >= topRight.x && data[1] <= topRight.y) {
                     topRight.x = data[0] - EDGE_SIZE;
                     topRight.y = data[1] + EDGE_SIZE;
-                } else if (data[0] <= bottomLeft.x && data[1] >= bottomLeft.y) {
+                }
+                if (data[0] <= bottomLeft.x && data[1] >= bottomLeft.y) {
                     bottomLeft.x = data[0] + EDGE_SIZE;
                     bottomLeft.y = data[1] + EDGE_SIZE;
                 }
             }
         }
+        mainController.infoTextArea.appendText(topLeft + " \ntr" + topRight + " \nbr" + bottomRight + "\nbl" + bottomLeft);
         return new Square(topLeft, topRight, bottomRight, bottomLeft);
     }
 
@@ -140,11 +146,12 @@ public class ImageProcessing {
         Mat temp = src;
         mat2Hsv(temp, hsv);
         Mat colorRange = new Mat();
-        Core.inRange(hsv, new Scalar(minValues.get(0), minValues.get(1), minValues.get(2)), new Scalar(maxValues.get(0), maxValues.get(1), maxValues.get(2)), colorRange);
+        Core.inRange(hsv, new Scalar(minValues.get(0), minValues.get(1), minValues.get(2)), new Scalar(maxValues.get(0),
+                maxValues.get(1), maxValues.get(2)), colorRange);
         Mat circles = new Mat();
-        Vector<Mat> circlesList = new Vector<Mat>();
         medianBlur(colorRange, colorRange, 5);
-        HoughCircles(colorRange, circles, CV_HOUGH_GRADIENT, 1, 100, 4, 6, 16, 64);
+        HoughCircles(colorRange, circles, CV_HOUGH_GRADIENT, 1, 100, 4, 6, 16,
+                64);
         System.out.println("#rows " + circles.rows() + " #cols " + circles.cols());
         mainController.infoTextArea.setText("Pawns: " + circles.cols());
         double x, y, r;
@@ -162,8 +169,15 @@ public class ImageProcessing {
         if (view) {
             return temp;
         } else {
-            return colorRange;
+            return circles;
         }
     }
-
+    
+    public List<double[]> matToDouble(Mat mat) {
+        List<double[]> doubles = new ArrayList<>();
+        for (int i = 0; i < mat.cols(); i++) {
+            doubles.add(mat.get(0, i));
+        }
+        return doubles;
+    }
 }
