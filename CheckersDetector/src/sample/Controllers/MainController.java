@@ -87,17 +87,16 @@ public class MainController {
                             captureView.setFitHeight(400);
                             captureView.setPreserveRatio(true);
 
-//                            Mat firstPlayerPawns = imageProcessing.findCircles(topView, firstPlayer.getMinValues(), firstPlayer.getMaxValues(), false);
+                            Mat firstPlayerPawns = imageProcessing.findCircles(topView, firstPlayer.getMinValues(), firstPlayer.getMaxValues(), false);
                             Mat secondPlayerPawns = imageProcessing.findCircles(topView, secondPlayer.getMinValues(), secondPlayer.getMaxValues(), false);
                             drawBoard.clearBoard();
-//                            List<double[]> firstPlayerPawnsTable = getPawnPositions(firstPlayerPawns);
-                            List<double[]> secondPlayerPawnsTable = getPawnPositions(secondPlayerPawns);
-//                            for (double[] pawn : getPawnPositions(firstPlayerPawns)) {
-//                                drawBoard.putPawn(pawn, board);
-//                            }
-                            for (double[] pawn : secondPlayerPawnsTable) {
+                            for (double[] pawn : getPawnPositions(firstPlayerPawns)) {
+                                drawBoard.putPawn(pawn, board, State.BLUE);
+                            }
+                            for (double[] pawn :  getPawnPositions(secondPlayerPawns)) {
                                 drawBoard.putPawn(pawn, board, State.YELLOW);
                             }
+                            
                             Mat backGround = drawBoard.drawGame(board);
                             checkersBoardView.setImage(mat2Image(backGround));
                             checkersBoardView.setFitWidth(400);
