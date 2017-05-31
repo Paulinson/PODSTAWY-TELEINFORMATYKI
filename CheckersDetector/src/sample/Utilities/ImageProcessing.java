@@ -1,5 +1,6 @@
 package sample.Utilities;
 
+import javafx.scene.Camera;
 import javafx.scene.image.Image;
 import org.opencv.calib3d.Calib3d;
 import org.opencv.core.*;

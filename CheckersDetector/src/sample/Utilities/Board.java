@@ -20,10 +20,9 @@ public class Board {
         cleanBoard();
         placeBluePawns();
         placeYellowPawns();
-
     }
 
-    private void cleanBoard() {
+    public void cleanBoard() {
         for (int x = 0; x < SIZE; x++) {
             for (int y = 0; y < SIZE; y++) {
                 boardState[x][y] = State.FREE;
@@ -44,7 +43,7 @@ public class Board {
         for (int x = SIZE - 2; x < SIZE; x++) {
             for (int y = 5; y < 8; y++) {
                 if (y % 2 == x % 2)
-                    boardState[x][y] = State.YELLOW;
+                    boardState[x][y] = State.GREEN;
             }
         }
     }

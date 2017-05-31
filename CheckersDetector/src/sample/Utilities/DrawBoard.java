@@ -1,7 +1,6 @@
 package sample.Utilities;
 
 import org.opencv.core.*;
-import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 
 import java.util.ArrayList;
@@ -11,8 +10,8 @@ public class DrawBoard {
     public Integer SCREEN_SIZE;
     public Integer pawnRadius;
     public Integer fieldSize;
-    public Color yellowPawn;
     public Color bluePawn;
+    public Color greenPawn;
     public Color lightField;
     public Color darkField;
     public Mat dispGameBoard;
@@ -22,16 +21,16 @@ public class DrawBoard {
         this.SCREEN_SIZE = 800;
         this.pawnRadius = ((Double) (SCREEN_SIZE * 0.9 / 16)).intValue();
         this.fieldSize = SCREEN_SIZE / board.SIZE;
-        this.yellowPawn = new Color(0, 255, 255);
-        this.bluePawn = new Color(0, 0, 255);
-        this.lightField = new Color(16);
-        this.darkField = new Color(256);
+        this.bluePawn = new Color(255, 0, 0);
+        this.greenPawn = new Color(0, 255, 43);
+        this.darkField = new Color(16);
+        this.lightField = new Color(256);
         this.dispGameBoard = new Mat(new Size(SCREEN_SIZE, SCREEN_SIZE), CvType.CV_8UC3);
         this.boardBackground = drawBackground(board);
     }
 
     public Mat drawGame(Board board) {
-        clearBoard();
+        drawBackground(board);
         drawPawns(board);
         return dispGameBoard;
     }
@@ -59,19 +58,22 @@ public class DrawBoard {
     }
 
     public void drawPawns(Board board) {
-        List<Integer> yP = yellowPawn.getMinValues();
         List<Integer> bP = bluePawn.getMinValues();
+        List<Integer> gP = greenPawn.getMinValues();
         for (int x = 0; x < board.SIZE; x++) {
             for (int y = 0; y < board.SIZE; y++) {
                 List<Integer> currentPawnColor = new ArrayList<>();
-                if (board.boardState[x][y] == State.YELLOW) {
-                    currentPawnColor = yP;
+                if (board.boardState[x][y] == State.GREEN) {
+                    currentPawnColor = gP;
                 } else if (board.boardState[x][y] == State.BLUE) {
                     currentPawnColor = bP;
                 } else {
                     continue;
                 }
-                Imgproc.circle(dispGameBoard, new Point(((x + .5)) * fieldSize, ((y + .5) * fieldSize)),
+                Imgproc.circle(dispGameBoard,
+                        new Point(
+                                ((x + .5)) * fieldSize,
+                                 ((y + .5) * fieldSize)),
                         pawnRadius, new Scalar(currentPawnColor.get(0), currentPawnColor.get(1), currentPawnColor.get(2)
                         ), -1);
             }

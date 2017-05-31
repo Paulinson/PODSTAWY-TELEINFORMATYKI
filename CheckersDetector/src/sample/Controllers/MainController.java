@@ -37,8 +37,8 @@ public class MainController {
     public ImageProcessing imageProcessing;
 
     Color firstPlayer = new Color(100, 150, 0, 140, 255, 255); //BLUE;
-    Color secondPlayer = new Color(20, 100, 100, 30, 255, 255); //YELLOW
-    Color borderEdges = new Color(50, 32, 16, 80, 245, 245); //GREEEN;
+    Color borderEdges = new Color(20, 100, 100, 30, 255, 255); //YELLOW
+    Color secondPlayer = new Color(50, 32, 16, 80, 245, 245); //GREEEN;
     Color currentColor;
     int gameState = 0;
 
@@ -53,6 +53,7 @@ public class MainController {
         checkersBoardView.setImage(mat2Image(drawBoard.drawBackground(board)));
         if (!imageProcessing.cameraActive) {
             imageProcessing = new ImageProcessing(MainController.this);
+            System.out.println(imageProcessing.capture);
             imageProcessing.capture.open(0);
             if (imageProcessing.capture.isOpened()) {
                 imageProcessing.cameraActive = true;
@@ -90,11 +91,12 @@ public class MainController {
                             Mat firstPlayerPawns = imageProcessing.findCircles(topView, firstPlayer.getMinValues(), firstPlayer.getMaxValues(), false);
                             Mat secondPlayerPawns = imageProcessing.findCircles(topView, secondPlayer.getMinValues(), secondPlayer.getMaxValues(), false);
                             drawBoard.clearBoard();
+                            board.cleanBoard();
                             for (double[] pawn : getPawnPositions(firstPlayerPawns)) {
                                 drawBoard.putPawn(pawn, board, State.BLUE);
                             }
-                            for (double[] pawn :  getPawnPositions(secondPlayerPawns)) {
-                                drawBoard.putPawn(pawn, board, State.YELLOW);
+                            for (double[] pawn : getPawnPositions(secondPlayerPawns)) {
+                                drawBoard.putPawn(pawn, board, State.GREEN);
                             }
                             
                             Mat backGround = drawBoard.drawGame(board);
@@ -138,19 +140,19 @@ public class MainController {
         return result;
     }
 
-    @FXML
-    public void takeScreenshot() {
-        File out = new File("screenShot0.png");
-        int i = 0;
-        while (out.exists()) {
-            out = new File("screenShot" + i + ".png");
-        }
-        //    try {
-        //        ImageIO.write(Image,"png",out);
-        //   } catch (IOException e1) {
-        //       e1.printStackTrace();
-        //   }
-    }
+//    @FXML
+//    public void takeScreenshot() {
+//        File out = new File("screenShot0.png");
+//        int i = 0;
+//        while (out.exists()) {
+//            out = new File("screenShot" + i + ".png");
+//        }
+//        //    try {
+//        //        ImageIO.write(Image,"png",out);
+//        //   } catch (IOException e1) {
+//        //       e1.printStackTrace();
+//        //   }
+//    }
 
     @FXML
     public void calibrate() {
